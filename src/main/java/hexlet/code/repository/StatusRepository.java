@@ -10,5 +10,5 @@ public interface StatusRepository extends JpaRepository<Status, Long> {
 
     List<Status> findAllByOrderByIdAsc();
 
-    Optional<Status> findTaskStatusById(long id);
+    Optional<Status> findStatusById(long id);
 }

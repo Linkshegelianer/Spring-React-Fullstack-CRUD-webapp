@@ -31,7 +31,7 @@ public class TaskController {
     public static final String ID = "/{id}";
 
     @GetMapping(ID)
-    public Task getTaskById(@PathVariable final Long id) {
+    public Task getTaskById(@PathVariable final long id) {
         return taskRepository.findById(id).get();
     }
 

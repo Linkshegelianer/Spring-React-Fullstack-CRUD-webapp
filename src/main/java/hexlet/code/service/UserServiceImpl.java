@@ -4,10 +4,14 @@ import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -46,5 +50,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getCurrentUser() {
         return userRepository.findByEmail(getCurrentUserName()).get();
+    }
+
+    @Override
+    public User findUserById(long id) throws ObjectNotFoundException {
+        if (id != null) {
+            return userRepository.findUserById(id)
+                    .orElseThrow(() -> new ObjectNotFoundException());
+        }
+        return null;
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        return userRepository.findAllByOrderByIdAsc();
+    }
+
+    @Override
+    public void deleteUser(long id, UserDetails authDetails) {
+        User existedUser = findUserById(id);
+        userRepository.delete(existedUser);
     }
 }

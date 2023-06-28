@@ -28,8 +28,7 @@ public final class TaskDto {
     private long authorId;
 
     @NotNull(message = "Field 'taskStatusId' must not be null!")
-    private Long taskStatusId;
-
+    private long taskStatusId;
 
     private List<Long> labelList;
 
