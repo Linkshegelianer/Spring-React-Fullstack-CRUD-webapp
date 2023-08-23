@@ -143,6 +143,7 @@ const NewTask = () => {
         <Form.Group className="mb-3">
           <Form.Label htmlFor="executorId">{t('executor')}</Form.Label>
           <Form.Select
+            multiple
             value={f.values.executorId}
             disabled={f.isSubmitting}
             onChange={f.handleChange}

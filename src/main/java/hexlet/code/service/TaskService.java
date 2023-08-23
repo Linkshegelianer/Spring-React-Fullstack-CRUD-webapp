@@ -1,22 +1,34 @@
 package hexlet.code.service;
 
 import com.querydsl.core.types.Predicate;
-import hexlet.code.dto.TaskDto;
-import hexlet.code.model.Task;
+import hexlet.code.domain.builder.TasksFactory;
+import hexlet.code.domain.dto.TaskRequestDTO;
+import hexlet.code.domain.model.Task;
+import hexlet.code.exception.NotFoundException;
+import hexlet.code.exception.NotTheOwnerException;
+import hexlet.code.repository.TaskRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Service
+@Transactional(readOnly = true)
 public interface TaskService {
 
-    Task createNewTask(TaskDto taskDto);
 
-    Task updateTask(long id, TaskDto taskDto);
+    public List<Task> findTasksByParams(Predicate predicate);
 
-    Task findTaskById(long id);
+    public Task findTaskById(long id);
 
-    List<Task> findAllTasks();
+    @Transactional
+    public Task createTask(TaskRequestDTO dto, UserDetails authDetails);
 
-    List<Task> findTasksByParams(Predicate predicate);
+    @Transactional
+    public Task updateTask(long id, TaskRequestDTO dto, UserDetails authDetails);
 
-    void deleteTask(long id);
+    @Transactional
+    public void deleteTask(long id, UserDetails authDetails);
 }

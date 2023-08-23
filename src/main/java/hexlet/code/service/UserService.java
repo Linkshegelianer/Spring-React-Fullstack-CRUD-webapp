@@ -1,27 +1,37 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.UserDto;
-import hexlet.code.model.User;
-import jakarta.validation.Valid;
+import hexlet.code.domain.mapper.UserModelMapper;
+import hexlet.code.domain.dto.UserRequestDTO;
+import hexlet.code.domain.model.User;
+import hexlet.code.exception.NotTheOwnerException;
+import hexlet.code.exception.NotFoundException;
+import hexlet.code.exception.UserAlreadyExistException;
+import hexlet.code.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
+@Service
+@Transactional(readOnly = true)
 public interface UserService {
 
-    User createNewUser(@Valid UserDto userDto);
+    public List<User> findAllUsers();
 
-    User updateUser(long id, UserDto userDto);
+    public User findUserById(Long id);
 
-    String getCurrentUserName();
+    public User getUserReferenceById(long id);
 
-    User getCurrentUser();
+    public User findUserByEmail(String email);
 
-    User findUserById(long id);
+    @Transactional
+    public User createUser(UserRequestDTO dto);
 
-    List<User> findAllUsers();
+    @Transactional
+    public User updateUser(long id, UserRequestDTO dto, UserDetails authDetails);
 
-    void deleteUser(long id, UserDetails authDetails);
+    @Transactional
+    public void deleteUser(long id, UserDetails authDetails);
 }
-

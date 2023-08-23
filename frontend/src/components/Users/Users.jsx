@@ -38,8 +38,6 @@ const UsersComponent = () => {
     } catch (e) {
       if (e.response?.status === 403) {
         notify.addErrors([{ text: 'userDeleteDenied' }]);
-      } else if (e.response?.status === 422) {
-        notify.addError('userDeleteFail');
       } else {
         handleError(e, notify, history, auth);
       }

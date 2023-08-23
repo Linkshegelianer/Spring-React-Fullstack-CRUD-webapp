@@ -1,9 +1,9 @@
-FROM gradle:7.4.0-jdk17
+# Render.com docker deployment
 
-WORKDIR /app
-
-COPY /app .
-
-RUN gradle installDist
-
-CMD ./build/install/app/bin/app
+FROM gradle:7.6.1-jdk17
+COPY . ./app
+WORKDIR ./app
+RUN gradle stage
+ARG PORT
+EXPOSE ${PORT}
+ENTRYPOINT ["build/install/app/bin/app"]

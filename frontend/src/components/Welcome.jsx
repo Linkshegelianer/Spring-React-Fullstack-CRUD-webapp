@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Button } from 'react-bootstrap';
+import routes from '../routes.js';
 
 const Welcome = () => {
   const { t } = useTranslation();
@@ -14,7 +15,7 @@ const Welcome = () => {
           {t('welcome.body')}
         </div>
         <hr />
-        <Button variant="primary" href="https://ru.hexlet.io/" className="btn-lg">{t('welcome.buttonText')}</Button>
+        <Button variant="primary" href={routes.usersPagePath()} className="btn-lg">{t('welcome.buttonText')}</Button>
       </Card.Body>
     </Card>
   );

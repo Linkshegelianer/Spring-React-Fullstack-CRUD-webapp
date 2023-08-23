@@ -1,19 +1,30 @@
 plugins {
-	id 'jacoco'
+	id 'application'
 	id 'checkstyle'
-	id 'application' // plugin that allows run a Java application using the ./gradlew run command
-	id 'org.springframework.boot' version '3.1.0'
-	id 'io.spring.dependency-management' version '1.1.0'
-	id 'org.liquibase.gradle' version '2.2.0'
+	id 'jacoco'
 	id 'org.siouan.frontend-jdk11' version '6.0.0'
+	id 'org.liquibase.gradle' version '2.0.4'
+	id 'org.springframework.boot' version '2.7.10'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
 group = 'hexlet.code'
 version = '1.0-SNAPSHOT'
 
+compileJava {
+	options.release = 17
+	options.encoding = 'UTF-8'
+}
+
 application {
 	mainClass = 'hexlet.code.AppApplication'
 	applicationDefaultJvmArgs = ['-Dfile.encoding=UTF-8']
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+	}
 }
 
 repositories {
@@ -25,23 +36,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-//	implementation 'io.jsonwebtoken:jjwt:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'org.liquibase:liquibase-core'
-	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	implementation 'com.querydsl:querydsl-core:5.0.0'
+	implementation 'com.querydsl:querydsl-jpa:5.0.0'
 	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 	implementation 'com.rollbar:rollbar-spring-boot-webmvc:1.10.0'
 
-	compileOnly 'org.projectlombok:lombok'
-
-	annotationProcessor(
-			'org.projectlombok:lombok',
-			'com.querydsl:querydsl-apt:5.0.0:jakarta',
-			'jakarta.persistence:jakarta.persistence-api:3.1.0'
-	)
-
-//	runtimeOnly 'io.jsonwebtoken:jjwt-api:0.11.5'
-//	runtimeOnly'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	runtimeOnly 'com.h2database:h2:2.1.214'
 	runtimeOnly 'org.postgresql:postgresql:42.5.4'
 
@@ -58,52 +61,69 @@ dependencies {
 
 	annotationProcessor 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final'
 	annotationProcessor 'javax.annotation:javax.annotation-api:1.3.2'
-	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jpa'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-wrapper {
-	gradleVersion = '7.4'
-	distributionType = Wrapper.DistributionType.ALL
+ext {
+	set('snakeyaml.version','1.32')
 }
 
-compileJava {
-	options.release = 17
-	options.encoding = 'UTF-8'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-diffChangelog {
+diffChangeLog {
 	dependsOn compileJava
 }
 
 liquibase {
 	activities {
 		main {
-			changelogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
-			url 'jdbc:h2:./taskManager'
+			changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+			url 'jdbc:h2:./database73'
 			username 'sa'
 			password 'sa'
 			referenceUrl 'hibernate:spring:hexlet.code.domain.model' +
-					'?dialect=org.hibernate.dialect.H2Dialect' +
-					'&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
+					     '?dialect=org.hibernate.dialect.H2Dialect' +
+					     '&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy'
+//					     '&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy'
 		}
 	}
 }
 
-jacocoTestReport {
-	reports {
-		xml.required = true
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// Frontend (static) build. Runs if no diffs.
+// *****************************************************************************
+frontend {
+	nodeVersion = '16.13.1'
+	installScript = 'install'
+	assembleScript = 'run build'
+	packageJsonDirectory = file("${projectDir}/frontend")
+}
+
+def configFrontendTasks = {
+	inputs.files(fileTree("$projectDir/frontend").exclude('build', 'node_modules'))
+	outputs.dir("$buildDir/resources/main/static")
+}
+
+assembleFrontend {
+	configure configFrontendTasks
+
+	doLast {
+		copy {
+			from "$projectDir/frontend/build"
+			into "$buildDir/resources/main/static"
+		}
 	}
 }
 
-checkstyle {
-	toolVersion '10.11.0'
+installFrontend {
+	configure configFrontendTasks
 }
+
+processResources.dependsOn assembleFrontend
+// *****************************************************************************
 
 task stage(dependsOn: ['clean', 'installDist'])
 installDist.mustRunAfter clean

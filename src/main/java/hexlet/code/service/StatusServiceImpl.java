@@ -1,51 +1,55 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.StatusDto;
-import hexlet.code.model.Status;
-import hexlet.code.model.User;
+import hexlet.code.domain.dto.TaskStatusRequestDTO;
+import hexlet.code.domain.mapper.TaskStatusModelMapper;
+import hexlet.code.domain.model.Status;
+import hexlet.code.exception.NotFoundException;
 import hexlet.code.repository.StatusRepository;
-import lombok.AllArgsConstructor;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@Transactional
-@AllArgsConstructor
+@Transactional(readOnly = true)
 public class StatusServiceImpl implements StatusService {
 
     private final StatusRepository statusRepository;
+    private final TaskStatusModelMapper statusMapper;
 
-    @Override
-    public Status createNewStatus(StatusDto statusDto) {
-        final Status status = new Status();
-        return statusRepository.save(status);
+    public StatusServiceImpl(StatusRepository statusRepository,
+                         TaskStatusModelMapper statusMapper) {
+        this.statusRepository = statusRepository;
+        this.statusMapper = statusMapper;
     }
 
-    @Override
-    public Status updateStatus(long id, StatusDto statusDto) {
-        Status statusToUpdate = findStatusById(id);
-        statusToUpdate.setName(statusDto.getName());
-        return statusToUpdate;
-    }
-
-    @Override
-    public Status findStatusById(long id) throws ObjectNotFoundException {
-        if (id != null) {
-            return statusRepository.findStatusById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException());
-        }
-        return null;
-    }
-
-    @Override
     public List<Status> findAllStatuses() {
         return statusRepository.findAllByOrderByIdAsc();
     }
 
-    @Override
+    public Status findStatusById(long id) {
+        return statusRepository.findTaskStatusById(id)
+                .orElseThrow(() -> new NotFoundException("Status with id='%d' not found!".formatted(id)));
+    }
+
+    public Status getStatusReferenceById(long id) {
+        return statusRepository.getReferenceById(id);
+    }
+
+    @Transactional
+    public Status createStatus(TaskStatusRequestDTO dto) {
+        Status newStatus = statusMapper.toTaskStatusModel(dto);
+        return statusRepository.save(newStatus);
+    }
+
+    @Transactional
+    public Status updateStatus(long id, TaskStatusRequestDTO dto) {
+        Status statusToUpdate = findStatusById(id);
+        statusToUpdate.setName(dto.getName());
+        return statusToUpdate;
+    }
+
+    @Transactional
     public void deleteStatus(long id) {
         Status existedStatus = findStatusById(id);
         statusRepository.delete(existedStatus);

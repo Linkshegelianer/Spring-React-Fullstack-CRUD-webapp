@@ -1,41 +1,22 @@
-setup:
-	gradle wrapper --gradle-version 7.3
-
-clean:
-	./gradlew clean
+run-dist: build test lint test-report run
 
 build:
-	./gradlew clean build
-
-start:
-	./gradlew bootRun --args='--spring.profiles.active=dev'
-
-start-prod:
-	./gradlew bootRun --args='--spring.profiles.active=prod'
-
-install:
+	./gradlew clean
 	./gradlew installDist
-
-start-dist:
-	./build/install/app/bin/app
-
-lint:
-	./gradlew checkstyleMain checkstyleTest
 
 test:
 	./gradlew test
 
-report:
+lint:
+	./gradlew checkstyleMain checkstyleTest
+
+test-report:
 	./gradlew jacocoTestReport
 
-check-updates:
-	./gradlew dependencyUpdates
+run:
+	PROFILE=dev ./build/install/app/bin/app
 
-generate-migrations:
-	gradle diffChangeLog
-
-db-migrate:
-	./gradlew update
-
+migration:
+	./gradlew diffChangeLog
 
 .PHONY: build

@@ -1,51 +1,66 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.LabelDto;
-import hexlet.code.model.Label;
-import hexlet.code.model.Status;
+import hexlet.code.domain.dto.LabelRequestDTO;
+import hexlet.code.domain.mapper.LabelModelMapper;
+import hexlet.code.domain.model.Label;
+import hexlet.code.exception.NotFoundException;
 import hexlet.code.repository.LabelRepository;
-import lombok.AllArgsConstructor;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
-@AllArgsConstructor
+@Transactional(readOnly = true)
 public class LabelServiceImpl implements LabelService {
 
     private final LabelRepository labelRepository;
+    private final LabelModelMapper labelMapper;
 
-    @Override
-    public Label createNewLabel(LabelDto labelDto) {
-        final Label label = new Label();
-        return labelRepository.save(label);
+    public LabelServiceImpl(LabelRepository labelRepository,
+                        LabelModelMapper labelMapper) {
+        this.labelRepository = labelRepository;
+        this.labelMapper = labelMapper;
     }
 
-    @Override
-    public Label updateLabel(long id, LabelDto labelDto) {
-        Label labelToUpdate = findLabelById(id);
-        labelToUpdate.setName(labelDto.getName());
-        return labelToUpdate;
-    }
-
-    @Override
-    public Label findLabelById(long id) throws ObjectNotFoundException {
-        if (id != null) {
-            return labelRepository.findLabelById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException());
-        }
-        return null;
-    }
-
-    @Override
     public List<Label> findAllLabels() {
         return labelRepository.findAllByOrderByIdAsc();
     }
 
-    @Override
+    public List<Label> findAllLabelsById(List<Long> labelIds) {
+        if (labelIds != null) {
+            return labelRepository.findAllById(labelIds);
+        }
+        return Collections.emptyList();
+    }
+
+    public List<Label> getAllLabelReferencesById(List<Long> labelIds) {
+        return labelIds.stream()
+                .map(labelRepository::getReferenceById)
+                .collect(Collectors.toList());
+    }
+
+    public Label findLabelById(long id) {
+        return labelRepository.findLabelById(id)
+                .orElseThrow(() -> new NotFoundException("Label with id='%d' not found!".formatted(id)));
+    }
+
+    @Transactional
+    public Label createLabel(LabelRequestDTO dto) {
+        Label newLabel = labelMapper.toLabelModel(dto);
+        return labelRepository.save(newLabel);
+    }
+
+    @Transactional
+    public Label updateLabel(long id, LabelRequestDTO dto) {
+        Label labelToUpdate = findLabelById(id);
+        labelToUpdate.setName(dto.getName());
+        return labelToUpdate;
+    }
+
+    @Transactional
     public void deleteLabel(long id) {
         Label existedLabel = findLabelById(id);
         labelRepository.delete(existedLabel);

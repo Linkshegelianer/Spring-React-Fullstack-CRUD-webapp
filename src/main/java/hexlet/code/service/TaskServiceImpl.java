@@ -1,66 +1,82 @@
 package hexlet.code.service;
 
 import com.querydsl.core.types.Predicate;
-import hexlet.code.dto.TaskDto;
-import hexlet.code.model.Task;
+import hexlet.code.domain.builder.TasksFactory;
+import hexlet.code.domain.dto.TaskRequestDTO;
+import hexlet.code.domain.model.Task;
+import hexlet.code.exception.NotFoundException;
+import hexlet.code.exception.NotTheOwnerException;
 import hexlet.code.repository.TaskRepository;
-import lombok.AllArgsConstructor;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@Transactional
-@AllArgsConstructor
+@Transactional(readOnly = true)
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final TasksFactory tasksFactory;
 
-    @Override
-    public Task createNewTask(final TaskDto taskDto) {
-        final Task task = new Task();
-        task.setName(taskDto.getName());
-        task.setDescription(taskDto.getDescription());
-        task.setStatus(taskDto.getTaskStatusId());
-        task.setLabels(taskDto.getLabelList());
-        task.setExecutor(taskDto.getExecutorId());
-        return taskRepository.save(task);
+    public TaskServiceImpl(TaskRepository taskRepository, TasksFactory tasksFactory) {
+        this.taskRepository = taskRepository;
+        this.tasksFactory = tasksFactory;
     }
 
-    @Override
-    public Task updateTask(final long id, final TaskDto taskDto) {
-        final Task taskToUpdate = taskRepository.findTaskById(id).get();
-        taskToUpdate.setName(taskDto.getName());
-        taskToUpdate.setDescription(taskDto.getDescription());
-        taskToUpdate.setStatus(taskDto.getTaskStatusId());
-        taskToUpdate.setLabels(taskDto.getLabelList());
-        taskToUpdate.setExecutor(taskDto.getExecutorId());
-        return taskRepository.save(taskToUpdate);
-    }
-
-    @Override
-    public Task findTaskById(long id) throws ObjectNotFoundException {
-        if (id != null) {
-            return taskRepository.findTaskById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException());
-        }
-        return null;
-    }
-
-    @Override
-    public List<Task> findAllTasks() {
-        return taskRepository.findAllByOrderByIdAsc();
-    }
-
-    @Override
     public List<Task> findTasksByParams(Predicate predicate) {
         if (predicate == null) {
             return taskRepository.findAllByOrderByIdAsc();
         }
         return taskRepository.findAll(predicate, Sort.by(Sort.Direction.ASC, "id"));
+    }
+
+    public Task findTaskById(long id) {
+        return taskRepository.findTaskById(id)
+                .orElseThrow(() -> new NotFoundException("Task with id='%d' not found!".formatted(id)));
+    }
+
+    @Transactional
+    public Task createTask(TaskRequestDTO dto, UserDetails authDetails) {
+        Task newTask = tasksFactory.builder(new Task())
+                .setName(dto.getName())
+                .setDescription(dto.getDescription())
+                .setTaskStatus(dto.getTaskStatusId())
+                .setLabels(dto.getLabelIds())
+                .setAuthor(authDetails.getUsername())
+                .setExecutor(dto.getExecutorId())
+                .build();
+
+        return taskRepository.save(newTask);
+    }
+
+    @Transactional
+    public Task updateTask(long id, TaskRequestDTO dto, UserDetails authDetails) {
+        Task existedTask = findTaskById(id);
+        validateOwnerByEmail(existedTask.getAuthor().getEmail(), authDetails);
+
+        return tasksFactory.builder(existedTask)
+                .setName(dto.getName())
+                .setDescription(dto.getDescription())
+                .setTaskStatus(dto.getTaskStatusId())
+                .setLabels(dto.getLabelIds())
+                .setExecutor(dto.getExecutorId())
+                .build();
+    }
+
+    @Transactional
+    public void deleteTask(long id, UserDetails authDetails) {
+        Task existedTask = findTaskById(id);
+        validateOwnerByEmail(existedTask.getAuthor().getEmail(), authDetails);
+        taskRepository.delete(existedTask);
+    }
+
+    private void validateOwnerByEmail(String userEmail, UserDetails authDetails) {
+        String authenticatedEmail = authDetails.getUsername();
+        if (!authenticatedEmail.equalsIgnoreCase(userEmail)) {
+            throw new NotTheOwnerException("Access denied. For owner only!");
+        }
     }
 }
