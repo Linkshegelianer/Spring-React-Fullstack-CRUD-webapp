@@ -1,13 +1,14 @@
-package hexlet.code.service;
+package hexlet.code.service.impl;
 
 import hexlet.code.domain.dto.LabelRequestDTO;
 import hexlet.code.domain.mapper.LabelModelMapper;
 import hexlet.code.domain.model.Label;
-import hexlet.code.exception.NotFoundException;
 import hexlet.code.repository.LabelRepository;
+import hexlet.code.service.LabelService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +45,7 @@ public class LabelServiceImpl implements LabelService {
 
     public Label findLabelById(long id) {
         return labelRepository.findLabelById(id)
-                .orElseThrow(() -> new NotFoundException("Label with id='%d' not found!".formatted(id)));
+                .orElseThrow(() -> new EntityNotFoundException("Label with id='%d' not found!".formatted(id)));
     }
 
     @Transactional

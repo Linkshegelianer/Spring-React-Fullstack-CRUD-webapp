@@ -1,17 +1,17 @@
-package hexlet.code.service;
+package hexlet.code.service.impl;
 
 import hexlet.code.domain.dto.UserRequestDTO;
 import hexlet.code.domain.mapper.UserModelMapper;
 import hexlet.code.domain.model.User;
-import hexlet.code.exception.NotFoundException;
-import hexlet.code.exception.NotTheOwnerException;
-import hexlet.code.exception.AlreadyExistsException;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.service.UserService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     public User findUserById(Long id) {
         if (id != null) {
             return userRepository.findUserById(id)
-                    .orElseThrow(() -> new NotFoundException("User with id='%d' not found!".formatted(id)));
+                    .orElseThrow(() -> new EntityNotFoundException("User with id='%d' not found!".formatted(id)));
         }
         return null;
     }
@@ -47,13 +47,13 @@ public class UserServiceImpl implements UserService {
 
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmailIgnoreCase(email)
-                .orElseThrow(() -> new NotFoundException("User with email '%s' not found!".formatted(email)));
+                .orElseThrow(() -> new EntityNotFoundException("User with email '%s' not found!".formatted(email)));
     }
 
     @Transactional
     public User createUser(UserRequestDTO dto) {
         if (userRepository.existsUserByEmailIgnoreCase(dto.getEmail())) {
-            throw new AlreadyExistsException("User already exists!");
+            throw new RuntimeException("User already exists!");
         }
         User newUser = userMapper.toUserModel(dto);
         String encodedPassword = bCryptPasswordEncoder.encode(newUser.getPassword());
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     private void validateOwnerByEmail(String userEmail, UserDetails authDetails) {
         String authenticatedEmail = authDetails.getUsername();
         if (!authenticatedEmail.equalsIgnoreCase(userEmail)) {
-            throw new NotTheOwnerException("Access denied. For owner only!");
+            throw new AccessDeniedException("Access denied!");
         }
     }
 }

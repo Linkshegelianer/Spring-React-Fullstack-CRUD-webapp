@@ -1,7 +1,7 @@
 package hexlet.code.controller;
 
 import hexlet.code.domain.dto.LogInRequestDTO;
-import hexlet.code.service.LogInService;
+import hexlet.code.service.impl.LogInServiceImpl;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("${base.url}")
 public class LogInController {
 
-    private final LogInService logInService;
+    private final LogInServiceImpl logInService;
 
-    public LogInController(LogInService logInService) {
+    public LogInController(LogInServiceImpl logInService) {
         this.logInService = logInService;
     }
 

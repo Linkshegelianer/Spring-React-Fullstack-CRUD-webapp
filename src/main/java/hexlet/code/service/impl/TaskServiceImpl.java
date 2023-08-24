@@ -1,18 +1,18 @@
-package hexlet.code.service;
+package hexlet.code.service.impl;
 
 import com.querydsl.core.types.Predicate;
 import hexlet.code.domain.builder.TasksFactory;
 import hexlet.code.domain.dto.TaskRequestDTO;
 import hexlet.code.domain.model.Task;
-import hexlet.code.exception.NotFoundException;
-//import hexlet.code.exception.NotTheOwnerException;
 import hexlet.code.repository.TaskRepository;
+import hexlet.code.service.TaskService;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -36,7 +36,7 @@ public class TaskServiceImpl implements TaskService {
 
     public Task findTaskById(long id) {
         return taskRepository.findTaskById(id)
-                .orElseThrow(() -> new NotFoundException("Task with id='%d' not found!".formatted(id)));
+                .orElseThrow(() -> new EntityNotFoundException("Task with id='%d' not found!".formatted(id)));
     }
 
     @Transactional

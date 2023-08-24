@@ -1,7 +1,7 @@
 package hexlet.code.security;
 
 import hexlet.code.exception.JWTValidationException;
-import hexlet.code.service.AppUserDetailsService;
+import hexlet.code.service.impl.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,11 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
-//import static hexlet.code.config.WebSecurityConfig.DEFAULT_AUTHORITY;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -37,7 +34,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private final JWTUtils jwtUtils;
     private RequestMatcher ignoredPaths;
 
-    public JWTAuthenticationFilter(AppUserDetailsService appUserDetailsService,
+    public JWTAuthenticationFilter(UserDetailsServiceImpl appUserDetailsService,
                                    @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
                                    JWTUtils jwtUtils) {
         this.appUserDetailsService = appUserDetailsService;
@@ -59,7 +56,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String authHeader = request.getHeader(AUTHORIZATION);
-        if (authHeader == null/* || !authHeader.startsWith(TOKEN_TYPE_NAME)*/) {
+        if (authHeader == null) {
             Exception jwtEx = new JWTValidationException("Authorization header is empty!");
             resolver.resolveException(request, response, null, jwtEx);
             return;
@@ -68,7 +65,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String jwtToken = authHeader.replaceFirst(TOKEN_TYPE_NAME, "").trim();
         Claims claims;
         try {
-            claims = jwtUtils.validateAndRetrieveClaims(jwtToken);
+            claims = jwtUtils.getClaims(jwtToken);
         } catch (JwtException ex) {
             resolver.resolveException(request, response, null, ex);
             return;

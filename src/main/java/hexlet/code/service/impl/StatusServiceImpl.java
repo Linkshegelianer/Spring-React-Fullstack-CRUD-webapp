@@ -1,13 +1,14 @@
-package hexlet.code.service;
+package hexlet.code.service.impl;
 
 import hexlet.code.domain.dto.StatusRequestDTO;
 import hexlet.code.domain.mapper.StatusModelMapper;
 import hexlet.code.domain.model.Status;
-import hexlet.code.exception.NotFoundException;
 import hexlet.code.repository.StatusRepository;
+import hexlet.code.service.StatusService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -29,7 +30,7 @@ public class StatusServiceImpl implements StatusService {
 
     public Status findStatusById(long id) {
         return statusRepository.findTaskStatusById(id)
-                .orElseThrow(() -> new NotFoundException("Status with id='%d' not found!".formatted(id)));
+                .orElseThrow(() -> new EntityNotFoundException("Status with id='%d' not found!".formatted(id)));
     }
 
     public Status getStatusReferenceById(long id) {
