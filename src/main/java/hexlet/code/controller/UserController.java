@@ -26,15 +26,12 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// TODO Validate dto field names (can be extra fields now)
-
 @RestController
 @RequestMapping("${base.url}" + "/users")
 public class UserController {
 
     private final UserService userService;
     private final UserModelMapper userMapper;
-    //private final UserValidator userValidator;
 
     public UserController(UserService userService, UserModelMapper userMapper) {
         this.userService = userService;
@@ -74,7 +71,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDTO registerUser(@RequestBody @Valid UserRequestDTO dto,
                                         BindingResult bindingResult) {
-        //userValidator.validate(userMapper.toUserModel(dto), bindingResult);
         User createdUser = userService.createUser(dto);
         return userMapper.toUserResponseDTO(createdUser);
     }

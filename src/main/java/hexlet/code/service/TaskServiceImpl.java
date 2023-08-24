@@ -5,9 +5,10 @@ import hexlet.code.domain.builder.TasksFactory;
 import hexlet.code.domain.dto.TaskRequestDTO;
 import hexlet.code.domain.model.Task;
 import hexlet.code.exception.NotFoundException;
-import hexlet.code.exception.NotTheOwnerException;
+//import hexlet.code.exception.NotTheOwnerException;
 import hexlet.code.repository.TaskRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,7 +77,7 @@ public class TaskServiceImpl implements TaskService {
     private void validateOwnerByEmail(String userEmail, UserDetails authDetails) {
         String authenticatedEmail = authDetails.getUsername();
         if (!authenticatedEmail.equalsIgnoreCase(userEmail)) {
-            throw new NotTheOwnerException("Access denied. For owner only!");
+            throw new AccessDeniedException("Access denied");
         }
     }
 }

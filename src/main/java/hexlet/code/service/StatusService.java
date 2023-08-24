@@ -1,10 +1,7 @@
 package hexlet.code.service;
 
-import hexlet.code.domain.mapper.TaskStatusModelMapper;
-import hexlet.code.domain.dto.TaskStatusRequestDTO;
+import hexlet.code.domain.dto.StatusRequestDTO;
 import hexlet.code.domain.model.Status;
-import hexlet.code.exception.NotFoundException;
-import hexlet.code.repository.StatusRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +18,10 @@ public interface StatusService {
     public Status getStatusReferenceById(long id);
 
     @Transactional
-    public Status createStatus(TaskStatusRequestDTO dto);
+    public Status createStatus(StatusRequestDTO dto);
 
     @Transactional
-    public Status updateStatus(long id, TaskStatusRequestDTO dto);
+    public Status updateStatus(long id, StatusRequestDTO dto);
 
     @Transactional
     public void deleteStatus(long id);

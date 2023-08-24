@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO Use custom synchronization methods (addLabel / removeLabel) if bidirectional
 @Entity @Table(name = "tasks")
 public class Task {
 
@@ -35,7 +34,6 @@ public class Task {
     @ManyToOne(fetch = FetchType.EAGER)
     private Status taskStatus;
 
-    // Save and update labels, when save task
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "task_label",
         joinColumns = @JoinColumn(name = "task_id"),

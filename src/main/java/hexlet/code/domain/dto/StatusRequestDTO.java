@@ -2,15 +2,15 @@ package hexlet.code.domain.dto;
 
 import javax.validation.constraints.NotBlank;
 
-public class TaskStatusRequestDTO {
+public class StatusRequestDTO {
 
     @NotBlank(message = "Field 'name' must not be empty!")
     private String name;
 
-    public TaskStatusRequestDTO() {
+    public StatusRequestDTO() {
     }
 
-    public TaskStatusRequestDTO(String name) {
+    public StatusRequestDTO(String name) {
         this.name = name;
     }
 

@@ -22,8 +22,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
+//import static hexlet.code.config.WebSecurityConfig.DEFAULT_AUTHORITY;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -90,9 +93,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private UsernamePasswordAuthenticationToken buildSpringAuthToken(UserDetails userDetails) {
         return new UsernamePasswordAuthenticationToken(
-            userDetails,
-            null,
-            userDetails.getAuthorities()
+                userDetails,
+                null,
+                userDetails.getAuthorities()
         );
     }
 }

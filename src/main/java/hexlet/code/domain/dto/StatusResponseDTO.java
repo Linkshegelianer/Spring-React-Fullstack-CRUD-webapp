@@ -2,13 +2,13 @@ package hexlet.code.domain.dto;
 
 import java.time.Instant;
 
-public class TaskStatusResponseDTO {
+public class StatusResponseDTO {
 
     private long id;
     private String name;
     private Instant createdAt;
 
-    public TaskStatusResponseDTO(long id, String name, Instant createdAt) {
+    public StatusResponseDTO(long id, String name, Instant createdAt) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;

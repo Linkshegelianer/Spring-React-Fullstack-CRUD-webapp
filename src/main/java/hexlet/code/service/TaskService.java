@@ -1,13 +1,8 @@
 package hexlet.code.service;
 
 import com.querydsl.core.types.Predicate;
-import hexlet.code.domain.builder.TasksFactory;
 import hexlet.code.domain.dto.TaskRequestDTO;
 import hexlet.code.domain.model.Task;
-import hexlet.code.exception.NotFoundException;
-import hexlet.code.exception.NotTheOwnerException;
-import hexlet.code.repository.TaskRepository;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

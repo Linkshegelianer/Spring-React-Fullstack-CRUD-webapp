@@ -1,7 +1,7 @@
 package hexlet.code.service;
 
-import hexlet.code.domain.dto.TaskStatusRequestDTO;
-import hexlet.code.domain.mapper.TaskStatusModelMapper;
+import hexlet.code.domain.dto.StatusRequestDTO;
+import hexlet.code.domain.mapper.StatusModelMapper;
 import hexlet.code.domain.model.Status;
 import hexlet.code.exception.NotFoundException;
 import hexlet.code.repository.StatusRepository;
@@ -15,10 +15,10 @@ import java.util.List;
 public class StatusServiceImpl implements StatusService {
 
     private final StatusRepository statusRepository;
-    private final TaskStatusModelMapper statusMapper;
+    private final StatusModelMapper statusMapper;
 
     public StatusServiceImpl(StatusRepository statusRepository,
-                         TaskStatusModelMapper statusMapper) {
+                         StatusModelMapper statusMapper) {
         this.statusRepository = statusRepository;
         this.statusMapper = statusMapper;
     }
@@ -37,13 +37,13 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Transactional
-    public Status createStatus(TaskStatusRequestDTO dto) {
+    public Status createStatus(StatusRequestDTO dto) {
         Status newStatus = statusMapper.toTaskStatusModel(dto);
         return statusRepository.save(newStatus);
     }
 
     @Transactional
-    public Status updateStatus(long id, TaskStatusRequestDTO dto) {
+    public Status updateStatus(long id, StatusRequestDTO dto) {
         Status statusToUpdate = findStatusById(id);
         statusToUpdate.setName(dto.getName());
         return statusToUpdate;

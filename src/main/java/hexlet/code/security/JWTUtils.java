@@ -1,18 +1,18 @@
 package hexlet.code.security;
 
 import hexlet.code.domain.model.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Map;
+
 
 @Component
 public class JWTUtils {
@@ -33,24 +33,24 @@ public class JWTUtils {
         Date expirationDate = Date.from(systemTimestamp.plusHours(24).toInstant());
 
         return Jwts.builder()
-            .setSubject(JWT_SUBJECT)
-            .setIssuer(JWT_ISSUER)
-            .claim("email", user.getEmail())
-            .setIssuedAt(creationDate)
-            .setExpiration(expirationDate)
-            .signWith(key, SignatureAlgorithm.HS256)
-            .compact();
+                .setSubject(JWT_SUBJECT)
+                .setIssuer(JWT_ISSUER)
+                .claim("email", user.getEmail())
+                .setIssuedAt(creationDate)
+                .setExpiration(expirationDate)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public Claims validateAndRetrieveClaims(String token) throws JwtException {
         return Jwts.parserBuilder()
-            .requireSubject(JWT_SUBJECT)
-            .requireIssuer(JWT_ISSUER)
-            .setAllowedClockSkewSeconds(CLOCK_SKEW)
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+                .requireSubject(JWT_SUBJECT)
+                .requireIssuer(JWT_ISSUER)
+                .setAllowedClockSkewSeconds(CLOCK_SKEW)
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     /*public boolean isValid(String token) {

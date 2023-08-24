@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 @Component
 public class TaskModelMapper {
 
-    private final TaskStatusModelMapper taskStatusMapper;
+    private final StatusModelMapper taskStatusMapper;
     private final LabelModelMapper labelMapper;
     private final UserModelMapper userMapper;
 
 
-    public TaskModelMapper(TaskStatusModelMapper taskStatusMapper,
+    public TaskModelMapper(StatusModelMapper taskStatusMapper,
                            LabelModelMapper labelMapper,
                            UserModelMapper userMapper) {
         this.taskStatusMapper = taskStatusMapper;
@@ -49,22 +49,4 @@ public class TaskModelMapper {
         dto.setCreatedAt(task.getCreatedAt());
         return dto;
     }
-
-    /*public Task toTaskLazyModel(final TaskRequestDTO dto) {
-        final Task task = new Task();
-        task.setName(dto.getName());
-        task.setDescription(dto.getDescription());
-        task.setTaskStatus(new TaskStatus(dto.getTaskStatusId()));
-        task.setLabels(
-            Optional.ofNullable(dto.getLabelIds())
-                .map(listIds -> listIds.stream().map(Label::new).collect(Collectors.toList()))
-                .orElseGet(() -> null)
-        );
-        task.setExecutor(
-            Optional.ofNullable(dto.getExecutorId())
-                .map(User::new)
-                .orElseGet(() -> null)
-        );
-        return task;
-    }*/
 }

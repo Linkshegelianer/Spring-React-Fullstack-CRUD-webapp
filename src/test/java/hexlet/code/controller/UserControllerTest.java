@@ -40,9 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// Bootstrap the full application context, we can @Autowire any bean.
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT) // Test with a real http server
-@TestPropertySource(locations = "classpath:application-integrationtest.properties")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestPropertySource(locations = "classpath:application.properties")
 @AutoConfigureMockMvc
 class UserControllerTest {
 
@@ -123,7 +122,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testRegisterUser() throws Exception {
+    void testRegisterUser() throws Exception { // ok
         long expectedCountInDB = 0;
         long actualCount = userRepository.count();
 
@@ -140,8 +139,9 @@ class UserControllerTest {
         assertEquals(expectedCountInDB, actualCount);
     }
 
+
     @Test
-    void testUpdateUser() throws Exception {
+    void testUpdateUser() throws Exception { // Status expected:<200> but was:<403>
         registerUser(TEST_EMAIL_1)
             .andExpect(status().isCreated());
 
@@ -160,7 +160,7 @@ class UserControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + jwtToken)
                 .content(utils.toJson(dto))
                 .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
+            .andExpect(status().isOk()) // here
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", is(userId), Long.class))
             .andExpect(jsonPath("$.lastName", is(TEST_UPDATED_LAST_NAME)));
@@ -171,7 +171,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testDeleteUser() throws Exception {
+    void testDeleteUser() throws Exception { // Status expected:<200> but was:<403>
         registerUser(TEST_EMAIL_1)
             .andExpect(status().isCreated());
 
@@ -192,7 +192,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testUpdateOrDeleteUserByNotTheOwner() throws Exception {
+    void testUpdateOrDeleteUserByNotTheOwner() throws Exception { // ok
         registerUser(TEST_EMAIL_1)
             .andExpect(status().isCreated());
 

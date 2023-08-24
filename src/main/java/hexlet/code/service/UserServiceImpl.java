@@ -5,7 +5,7 @@ import hexlet.code.domain.mapper.UserModelMapper;
 import hexlet.code.domain.model.User;
 import hexlet.code.exception.NotFoundException;
 import hexlet.code.exception.NotTheOwnerException;
-import hexlet.code.exception.UserAlreadyExistException;
+import hexlet.code.exception.AlreadyExistsException;
 import hexlet.code.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUser(UserRequestDTO dto) {
         if (userRepository.existsUserByEmailIgnoreCase(dto.getEmail())) {
-            throw new UserAlreadyExistException("User already exists!");
+            throw new AlreadyExistsException("User already exists!");
         }
         User newUser = userMapper.toUserModel(dto);
         String encodedPassword = bCryptPasswordEncoder.encode(newUser.getPassword());

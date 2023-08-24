@@ -1,8 +1,8 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import hexlet.code.domain.dto.TaskStatusRequestDTO;
-import hexlet.code.domain.dto.TaskStatusResponseDTO;
+import hexlet.code.domain.dto.StatusRequestDTO;
+import hexlet.code.domain.dto.StatusResponseDTO;
 import hexlet.code.domain.model.Status;
 import hexlet.code.domain.model.User;
 import hexlet.code.repository.TaskRepository;
@@ -10,6 +10,11 @@ import hexlet.code.repository.StatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.security.JWTUtils;
 import hexlet.code.utils.TestUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT) // Test with a real http server
-@TestPropertySource(locations = "classpath:application-integrationtest.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @AutoConfigureMockMvc
 class StatusControllerTest {
 
@@ -89,7 +94,7 @@ class StatusControllerTest {
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        List<TaskStatusResponseDTO> statusDTOList = testUtils.jsonToObject(
+        List<StatusResponseDTO> statusDTOList = testUtils.jsonToObject(
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
@@ -113,7 +118,7 @@ class StatusControllerTest {
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        TaskStatusResponseDTO statusDTO = testUtils.jsonToObject(
+        StatusResponseDTO statusDTO = testUtils.jsonToObject(
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
@@ -147,7 +152,7 @@ class StatusControllerTest {
 
         Status statusToUpdate = statusRepository.findAll().get(0);
         long statusId = statusToUpdate.getId();
-        TaskStatusRequestDTO dto = new TaskStatusRequestDTO(TEST_UPDATED_STATUS_NAME);
+        StatusRequestDTO dto = new StatusRequestDTO(TEST_UPDATED_STATUS_NAME);
 
         mvc.perform(put("/api/statuses/%d".formatted(statusId))
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
@@ -180,7 +185,7 @@ class StatusControllerTest {
     }
 
     private ResultActions createStatus(String name) throws Exception {
-        TaskStatusRequestDTO statusRequestDTO = new TaskStatusRequestDTO(name);
+        StatusRequestDTO statusRequestDTO = new StatusRequestDTO(name);
 
         return mvc.perform(post("/api/statuses")
             .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)

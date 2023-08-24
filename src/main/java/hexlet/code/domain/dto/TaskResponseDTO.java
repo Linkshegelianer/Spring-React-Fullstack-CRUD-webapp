@@ -8,7 +8,7 @@ public class TaskResponseDTO {
     private long id;
     private UserResponseDTO author;
     private UserResponseDTO executor;
-    private TaskStatusResponseDTO taskStatus;
+    private StatusResponseDTO taskStatus;
     private List<LabelResponseDTO> labels;
     private String name;
     private String description;
@@ -38,11 +38,11 @@ public class TaskResponseDTO {
         this.executor = executor;
     }
 
-    public TaskStatusResponseDTO getTaskStatus() {
+    public StatusResponseDTO getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(TaskStatusResponseDTO taskStatus) {
+    public void setTaskStatus(StatusResponseDTO taskStatus) {
         this.taskStatus = taskStatus;
     }
 
