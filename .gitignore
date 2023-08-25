@@ -4,8 +4,6 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-database73.mv.db
-database73.trace.db
 
 ### Custom ###
 /node/
