@@ -1,6 +1,5 @@
 package hexlet.code.controller;
 
-import hexlet.code.domain.mapper.UserModelMapper;
 import hexlet.code.domain.dto.UserRequestDTO;
 import hexlet.code.domain.dto.UserResponseDTO;
 import hexlet.code.domain.model.User;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final UserModelMapper userMapper;
 
     @Operation(summary = "Create new user")
     @ApiResponses(value = {
@@ -46,7 +44,7 @@ public class UserController {
     public UserResponseDTO createUser(@RequestBody @Valid UserRequestDTO dto,
                                       BindingResult bindingResult) {
         User createdUser = userService.createUser(dto);
-        return userMapper.toUserResponseDTO(createdUser);
+        return toUserResponseDTO(createdUser);
     }
 
     @Operation(summary = "Get list of all users")
@@ -57,7 +55,7 @@ public class UserController {
     public List<UserResponseDTO> findAllUsers() {
         List<User> existedUsers = userService.getAllUsers();
         return existedUsers.stream()
-            .map(userMapper::toUserResponseDTO)
+            .map(this::toUserResponseDTO)
             .collect(Collectors.toList());
     }
 
@@ -69,7 +67,7 @@ public class UserController {
     @GetMapping(path = "/{id}")
     public UserResponseDTO findUserById(@PathVariable(name = "id") long id) {
         User existedUser = userService.getUserById(id);
-        return userMapper.toUserResponseDTO(existedUser);
+        return toUserResponseDTO(existedUser);
     }
 
     @Operation(summary = "Update user by his id")
@@ -85,7 +83,7 @@ public class UserController {
                                       @PathVariable(name = "id") long id,
                                       @AuthenticationPrincipal UserDetails authDetails) {
         User updatedUser = userService.updateUser(id, dto, authDetails);
-        return userMapper.toUserResponseDTO(updatedUser);
+        return toUserResponseDTO(updatedUser);
     }
 
     @Operation(summary = "Delete user by his id")
@@ -99,5 +97,15 @@ public class UserController {
     public void deleteUser(@PathVariable(name = "id") long id,
                            @AuthenticationPrincipal UserDetails authDetails) {
         userService.deleteUser(id, authDetails);
+    }
+
+    private UserResponseDTO toUserResponseDTO(final User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getCreatedAt()
+        );
     }
 }

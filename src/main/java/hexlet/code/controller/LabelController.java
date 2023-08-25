@@ -1,9 +1,8 @@
 package hexlet.code.controller;
 
-import hexlet.code.domain.dto.LabelRequestDTO;
-import hexlet.code.domain.dto.LabelResponseDTO;
-import hexlet.code.domain.mapper.LabelModelMapper;
+import hexlet.code.domain.dto.LabelDTO;
 import hexlet.code.domain.model.Label;
+import hexlet.code.utils.DataMapper;
 import hexlet.code.service.LabelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,7 +31,7 @@ import java.util.stream.Collectors;
 public class LabelController {
 
     private final LabelService labelService;
-    private final LabelModelMapper labelMapper;
+    private final DataMapper dataMapper;
 
     @Operation(summary = "Create new label")
     @ApiResponses(value = {
@@ -40,19 +39,20 @@ public class LabelController {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Label.class))})})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LabelResponseDTO createLabel(@RequestBody @Valid LabelRequestDTO dto) {
+    public LabelDTO createLabel(@RequestBody @Valid LabelDTO dto) {
         Label createdLabel = labelService.createLabel(dto);
-        return labelMapper.toLabelResponseDTO(createdLabel);
+        return dataMapper.toLabelDTO(createdLabel);
     }
 
     @Operation(summary = "Get all labels")
     @ApiResponse(responseCode = "200", description = "All labels are found",
             content = @Content(schema = @Schema(implementation = Label.class)))
     @GetMapping
-    public List<LabelResponseDTO> findAllLabels() {
+    public List<LabelDTO> findAllLabels() {
         List<Label> existedLabels = labelService.getAllLabels();
+
         return existedLabels.stream()
-            .map(labelMapper::toLabelResponseDTO)
+            .map(dataMapper::toLabelDTO)
             .collect(Collectors.toList());
     }
 
@@ -63,9 +63,9 @@ public class LabelController {
                             schema = @Schema(implementation = Label.class))}),
             @ApiResponse(responseCode = "404", description = "No such label found", content = @Content)})
     @GetMapping(path = "/{id}")
-    public LabelResponseDTO findLabelById(@PathVariable(name = "id") long id) {
+    public LabelDTO findLabelById(@PathVariable(name = "id") long id) {
         Label existedLabel = labelService.getLabelById(id);
-        return labelMapper.toLabelResponseDTO(existedLabel);
+        return dataMapper.toLabelDTO(existedLabel);
     }
 
     @Operation(summary = "Update the label by id")
@@ -75,10 +75,10 @@ public class LabelController {
                             schema = @Schema(implementation = Label.class))}),
             @ApiResponse(responseCode = "422", description = "Invalid request", content = @Content)})
     @PutMapping(path = "/{id}")
-    public LabelResponseDTO updateLabel(@RequestBody @Valid LabelRequestDTO dto,
+    public LabelDTO updateLabel(@RequestBody @Valid LabelDTO dto,
                                         @PathVariable(name = "id") long id) {
         Label updatedLabel = labelService.updateLabel(id, dto);
-        return labelMapper.toLabelResponseDTO(updatedLabel);
+        return dataMapper.toLabelDTO(updatedLabel);
     }
 
     @Operation(summary = "Delete the label by id")

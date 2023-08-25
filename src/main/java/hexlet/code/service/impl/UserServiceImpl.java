@@ -1,7 +1,6 @@
 package hexlet.code.service.impl;
 
 import hexlet.code.domain.dto.UserRequestDTO;
-import hexlet.code.domain.mapper.UserModelMapper;
 import hexlet.code.domain.model.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
@@ -20,7 +19,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserModelMapper userMapper;
     private final PasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
@@ -28,7 +26,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsUserByEmailIgnoreCase(dto.getEmail())) {
             throw new RuntimeException("User already exists!");
         }
-        User newUser = userMapper.toUserModel(dto);
+        User newUser = toUserModel(dto);
         String encodedPassword = bCryptPasswordEncoder.encode(newUser.getPassword());
         newUser.setPassword(encodedPassword);
         return userRepository.save(newUser);
@@ -79,5 +77,14 @@ public class UserServiceImpl implements UserService {
         if (!authenticatedEmail.equalsIgnoreCase(userEmail)) {
             throw new AccessDeniedException("Access denied!");
         }
+    }
+
+    private User toUserModel(final UserRequestDTO dto) {
+        return new User(
+                dto.getFirstName(),
+                dto.getLastName(),
+                dto.getEmail().toLowerCase(),
+                dto.getPassword()
+        );
     }
 }

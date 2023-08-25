@@ -187,3 +187,5 @@ databaseChangeLog:
         referencedTableName: users
         validate: true
 
+databaseChangeLog: []
+

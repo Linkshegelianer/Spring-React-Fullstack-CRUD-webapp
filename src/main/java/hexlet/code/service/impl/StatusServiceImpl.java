@@ -1,7 +1,6 @@
 package hexlet.code.service.impl;
 
-import hexlet.code.domain.dto.StatusRequestDTO;
-import hexlet.code.domain.mapper.StatusModelMapper;
+import hexlet.code.domain.dto.StatusDTO;
 import hexlet.code.domain.model.Status;
 import hexlet.code.repository.StatusRepository;
 import hexlet.code.service.StatusService;
@@ -18,11 +17,11 @@ import java.util.List;
 public class StatusServiceImpl implements StatusService {
 
     private final StatusRepository statusRepository;
-    private final StatusModelMapper statusMapper;
+//    private final StatusModelMapper statusMapper;
 
     @Transactional
-    public Status createStatus(StatusRequestDTO dto) {
-        Status newStatus = statusMapper.toTaskStatusModel(dto);
+    public Status createStatus(StatusDTO dto) {
+        Status newStatus = toTaskStatusModel(dto);
         return statusRepository.save(newStatus);
     }
 
@@ -40,7 +39,7 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Transactional
-    public Status updateStatus(long id, StatusRequestDTO dto) {
+    public Status updateStatus(long id, StatusDTO dto) {
         Status statusToUpdate = getStatusById(id);
         statusToUpdate.setName(dto.getName());
         return statusToUpdate;
@@ -50,5 +49,11 @@ public class StatusServiceImpl implements StatusService {
     public void deleteStatus(long id) {
         Status existedStatus = getStatusById(id);
         statusRepository.delete(existedStatus);
+    }
+
+    private Status toTaskStatusModel(final StatusDTO dto) {
+        return new Status(
+                dto.getName()
+        );
     }
 }

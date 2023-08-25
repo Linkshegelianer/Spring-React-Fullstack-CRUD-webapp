@@ -1,6 +1,6 @@
 package hexlet.code.service.impl;
 
-import hexlet.code.domain.dto.LogInRequestDTO;
+import hexlet.code.domain.dto.LogInDTO;
 import hexlet.code.domain.model.User;
 import hexlet.code.exception.SignInException;
 import hexlet.code.repository.UserRepository;
@@ -20,7 +20,7 @@ public class LogInServiceImpl implements LogInService {
     private final JWTUtils jwtUtils;
 
     @Override
-    public String authenticate(LogInRequestDTO logInDTO) {
+    public String authenticate(LogInDTO logInDTO) {
         User existedUser = userRepository.findUserByEmailIgnoreCase(logInDTO.getEmail())
                 .orElseThrow(() -> new SignInException("Sign in failed. User not found!"));
 

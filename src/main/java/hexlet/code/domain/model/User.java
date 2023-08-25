@@ -1,6 +1,11 @@
 package hexlet.code.domain.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NonNull;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Entity;

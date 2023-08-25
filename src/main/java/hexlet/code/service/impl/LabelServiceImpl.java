@@ -1,7 +1,6 @@
 package hexlet.code.service.impl;
 
-import hexlet.code.domain.dto.LabelRequestDTO;
-import hexlet.code.domain.mapper.LabelModelMapper;
+import hexlet.code.domain.dto.LabelDTO;
 import hexlet.code.domain.model.Label;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.service.LabelService;
@@ -20,11 +19,10 @@ import java.util.stream.Collectors;
 public class LabelServiceImpl implements LabelService {
 
     private final LabelRepository labelRepository;
-    private final LabelModelMapper labelMapper;
 
     @Transactional
-    public Label createLabel(LabelRequestDTO dto) {
-        Label newLabel = labelMapper.toLabelModel(dto);
+    public Label createLabel(LabelDTO dto) {
+        Label newLabel = toLabelModel(dto);
         return labelRepository.save(newLabel);
     }
 
@@ -51,7 +49,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Transactional
-    public Label updateLabel(long id, LabelRequestDTO dto) {
+    public Label updateLabel(long id, LabelDTO dto) {
         Label labelToUpdate = getLabelById(id);
         labelToUpdate.setName(dto.getName());
         return labelToUpdate;
@@ -61,5 +59,11 @@ public class LabelServiceImpl implements LabelService {
     public void deleteLabel(long id) {
         Label existedLabel = getLabelById(id);
         labelRepository.delete(existedLabel);
+    }
+
+    private static Label toLabelModel(final LabelDTO dto) {
+        return new Label(
+                dto.getName()
+        );
     }
 }

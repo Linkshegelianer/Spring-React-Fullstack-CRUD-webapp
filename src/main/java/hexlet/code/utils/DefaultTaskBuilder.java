@@ -1,4 +1,4 @@
-package hexlet.code.domain.builder;
+package hexlet.code.utils;
 
 import hexlet.code.domain.model.Label;
 import hexlet.code.domain.model.Status;
@@ -7,26 +7,17 @@ import hexlet.code.domain.model.User;
 import hexlet.code.service.LabelService;
 import hexlet.code.service.StatusService;
 import hexlet.code.service.UserService;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+@AllArgsConstructor
 public class DefaultTaskBuilder implements TaskBuilder {
 
     private final StatusService statusService;
     private final LabelService labelService;
     private final UserService userService;
     private final Task task;
-
-
-    public DefaultTaskBuilder(StatusService statusService,
-                              LabelService labelService,
-                              UserService userService,
-                              Task task) {
-        this.statusService = statusService;
-        this.labelService = labelService;
-        this.userService = userService;
-        this.task = task;
-    }
 
     @Override
     public TaskBuilder setName(String name) {

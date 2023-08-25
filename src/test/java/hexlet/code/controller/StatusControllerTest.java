@@ -1,8 +1,8 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import hexlet.code.domain.dto.StatusRequestDTO;
-import hexlet.code.domain.dto.StatusResponseDTO;
+import hexlet.code.domain.dto.StatusDTO;
+//import hexlet.code.domain.dto.StatusResponseDTO;
 import hexlet.code.domain.model.Status;
 import hexlet.code.domain.model.User;
 import hexlet.code.repository.StatusRepository;
@@ -100,7 +100,7 @@ class StatusControllerTest {
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        List<StatusResponseDTO> statusDTOList = testUtils.jsonToObject(
+        List<StatusDTO> statusDTOList = testUtils.jsonToObject(
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
@@ -124,7 +124,7 @@ class StatusControllerTest {
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        StatusResponseDTO statusDTO = testUtils.jsonToObject(
+        StatusDTO statusDTO = testUtils.jsonToObject(
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
@@ -140,7 +140,7 @@ class StatusControllerTest {
 
         Status statusToUpdate = statusRepository.findAll().get(0);
         long statusId = statusToUpdate.getId();
-        StatusRequestDTO dto = new StatusRequestDTO(TEST_UPDATED_STATUS);
+        StatusDTO dto = new StatusDTO(TEST_UPDATED_STATUS);
 
         mvc.perform(put("/api/statuses/%d".formatted(statusId))
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
@@ -173,7 +173,7 @@ class StatusControllerTest {
     }
 
     private ResultActions createStatus(String name) throws Exception {
-        StatusRequestDTO statusRequestDTO = new StatusRequestDTO(name);
+        StatusDTO statusRequestDTO = new StatusDTO(name);
 
         return mvc.perform(post("/api/statuses")
             .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)

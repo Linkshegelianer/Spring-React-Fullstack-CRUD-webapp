@@ -1,0 +1,23 @@
+base.url: "/api"
+
+spring:
+  application:
+    name: taskManager
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.xml
+
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+logging:
+  level:
+    root: INFO

@@ -1,4 +1,4 @@
-package hexlet.code.domain.builder;
+package hexlet.code.utils;
 
 import hexlet.code.domain.model.Task;
 

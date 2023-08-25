@@ -1,8 +1,8 @@
 package hexlet.code.service;
 
-import hexlet.code.domain.dto.LogInRequestDTO;
+import hexlet.code.domain.dto.LogInDTO;
 
 public interface LogInService {
 
-    public String authenticate(LogInRequestDTO logInDTO);
+    public String authenticate(LogInDTO logInDTO);
 }

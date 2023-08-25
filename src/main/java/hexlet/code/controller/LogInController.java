@@ -1,6 +1,6 @@
 package hexlet.code.controller;
 
-import hexlet.code.domain.dto.LogInRequestDTO;
+import hexlet.code.domain.dto.LogInDTO;
 import hexlet.code.service.impl.LogInServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +16,7 @@ public class LogInController {
     private final LogInServiceImpl logInService;
 
     @PostMapping(path = "/login")
-    public String logIn(@RequestBody LogInRequestDTO dto) {
+    public String logIn(@RequestBody LogInDTO dto) {
         return logInService.authenticate(dto);
     }
 }

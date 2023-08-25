@@ -1,4 +1,4 @@
-package hexlet.code.domain.model;
+package hexlet.code.domain.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,13 +6,7 @@ import lombok.NonNull;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 
@@ -21,16 +15,13 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Entity @Table(name = "statuses")
-public class Status {
+public class StatusDTO {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NonNull
-    @NotBlank
+    @NotBlank(message = "Field 'name' must not be empty!")
     private String name;
 
-    @CreationTimestamp
     private Instant createdAt;
 }

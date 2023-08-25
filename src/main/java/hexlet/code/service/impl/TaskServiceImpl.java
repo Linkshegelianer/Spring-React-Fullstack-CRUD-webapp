@@ -1,8 +1,8 @@
 package hexlet.code.service.impl;
 
 import com.querydsl.core.types.Predicate;
-import hexlet.code.domain.builder.TasksFactory;
-import hexlet.code.domain.dto.TaskRequestDTO;
+import hexlet.code.utils.TasksFactory;
+import hexlet.code.domain.dto.TaskDTO;
 import hexlet.code.domain.model.Task;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.service.TaskService;
@@ -22,10 +22,12 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+
+//    private final DefaultTaskBuilder taskBuilder;
     private final TasksFactory tasksFactory;
 
     @Transactional
-    public Task createTask(TaskRequestDTO dto, UserDetails authDetails) {
+    public Task createTask(TaskDTO dto, UserDetails authDetails) {
         Task newTask = tasksFactory.builder(new Task())
                 .setName(dto.getName())
                 .setDescription(dto.getDescription())
@@ -51,7 +53,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Transactional
-    public Task updateTask(long id, TaskRequestDTO dto, UserDetails authDetails) {
+    public Task updateTask(long id, TaskDTO dto, UserDetails authDetails) {
         Task existedTask = getTaskById(id);
         validateOwnerByEmail(existedTask.getAuthor().getEmail(), authDetails);
 

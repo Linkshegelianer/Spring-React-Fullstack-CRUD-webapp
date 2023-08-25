@@ -1,8 +1,9 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import hexlet.code.domain.dto.LabelRequestDTO;
-import hexlet.code.domain.dto.LabelResponseDTO;
+import hexlet.code.domain.dto.LabelDTO;
+//import hexlet.code.domain.dto.LabelRequestDTO;
+//import hexlet.code.domain.dto.LabelResponseDTO;
 import hexlet.code.domain.model.Label;
 import hexlet.code.domain.model.User;
 import hexlet.code.repository.LabelRepository;
@@ -111,7 +112,7 @@ class LabelControllerTest {
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        List<LabelResponseDTO> labelDTOList = testUtils.jsonToObject(
+        List<LabelDTO> labelDTOList = testUtils.jsonToObject(
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
@@ -136,7 +137,7 @@ class LabelControllerTest {
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        LabelResponseDTO labelDTO = testUtils.jsonToObject(
+        LabelDTO labelDTO = testUtils.jsonToObject(
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
@@ -152,7 +153,7 @@ class LabelControllerTest {
 
         Label labelToUpdate = labelRepository.findAll().get(0);
         long labelId = labelToUpdate.getId();
-        LabelRequestDTO dto = new LabelRequestDTO(TEST_UPDATED_LABEL);
+        LabelDTO dto = new LabelDTO(TEST_UPDATED_LABEL);
 
         mvc.perform(put("/api/labels/%d".formatted(labelId))
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
@@ -185,7 +186,7 @@ class LabelControllerTest {
     }
 
     private ResultActions createLabel(String name) throws Exception {
-        LabelRequestDTO labelRequestDTO = new LabelRequestDTO(name);
+        LabelDTO labelRequestDTO = new LabelDTO(name);
 
         return mvc.perform(post("/api/labels")
             .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)

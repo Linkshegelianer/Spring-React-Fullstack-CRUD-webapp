@@ -1,8 +1,8 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import hexlet.code.domain.dto.TaskRequestDTO;
-import hexlet.code.domain.dto.TaskResponseDTO;
+import hexlet.code.domain.dto.TaskDTO;
+//import hexlet.code.domain.dto.TaskResponseDTO;
 import hexlet.code.domain.model.Status;
 import hexlet.code.domain.model.Task;
 import hexlet.code.domain.model.User;
@@ -121,7 +121,7 @@ class TaskControllerTest {
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        List<TaskResponseDTO> taskDTOList = testUtils.jsonToObject(
+        List<TaskDTO> taskDTOList = testUtils.jsonToObject(
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
@@ -144,7 +144,7 @@ class TaskControllerTest {
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        TaskResponseDTO taskDTO = testUtils.jsonToObject(
+        TaskDTO taskDTO = testUtils.jsonToObject(
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
@@ -163,12 +163,11 @@ class TaskControllerTest {
 
         Task taskToUpdate = taskRepository.findAll().get(0);
         long taskId = taskToUpdate.getId();
-        TaskRequestDTO taskRequestDTO = new TaskRequestDTO(
+        TaskDTO taskRequestDTO = new TaskDTO(
                 TEST_UPDATED_TASK,
             TEST_UPDATED_TASK_DESCRIPTION,
             testAuthor.getId(),
-            testStatusInProgress.getId(),
-            null
+            testStatusInProgress.getId()
         );
 
         mvc.perform(put("/api/tasks/%d".formatted(taskId))
@@ -212,12 +211,11 @@ class TaskControllerTest {
 
         Task taskToUpdateOrDelete = taskRepository.findAll().get(0);
         long taskId = taskToUpdateOrDelete.getId();
-        TaskRequestDTO taskRequestDTO = new TaskRequestDTO(
+        TaskDTO taskRequestDTO = new TaskDTO(
                 TEST_UPDATED_TASK,
             TEST_UPDATED_TASK_DESCRIPTION,
             testAuthor.getId(),
-            testStatusInProgress.getId(),
-            null
+            testStatusInProgress.getId()
         );
 
         mvc.perform(put("/api/tasks/%d".formatted(taskId))
@@ -232,12 +230,11 @@ class TaskControllerTest {
     }
 
     private ResultActions createTask() throws Exception {
-        TaskRequestDTO taskRequestDTO = new TaskRequestDTO(
+        TaskDTO taskRequestDTO = new TaskDTO(
                 TEST_TASK,
             TEST_TASK_DESCRIPTION,
             testExecutor.getId(),
-            testStatusNew.getId(),
-            null
+            testStatusNew.getId()
         );
 
         return mvc.perform(post("/api/tasks")

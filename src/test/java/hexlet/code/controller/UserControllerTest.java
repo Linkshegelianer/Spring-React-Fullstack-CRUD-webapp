@@ -1,7 +1,7 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import hexlet.code.domain.dto.LogInRequestDTO;
+import hexlet.code.domain.dto.LogInDTO;
 import hexlet.code.domain.dto.UserRequestDTO;
 import hexlet.code.domain.dto.UserResponseDTO;
 import hexlet.code.domain.model.User;
@@ -233,7 +233,7 @@ class UserControllerTest {
     }
 
     private ResultActions signIn(String email) throws Exception {
-        LogInRequestDTO logInRequestDTO = new LogInRequestDTO(email, TEST_PASSWORD);
+        LogInDTO logInRequestDTO = new LogInDTO(email, TEST_PASSWORD);
 
         return mvc.perform(post("/api/login")
             .content(utils.toJson(logInRequestDTO))
