@@ -1,7 +1,21 @@
 databaseChangeLog:
 - changeSet:
-    id: 1682355152223-1
-    author: MPA (generated)
+    id: 1692973631017-1
+    author: morha (generated)
+    changes:
+    - dropTable:
+        tableName: POSTS
+- changeSet:
+    id: 1692973631017-2
+    author: morha (generated)
+    changes:
+    - dropTable:
+        tableName: POST_COMMENTS
+
+databaseChangeLog:
+- changeSet:
+    id: 1692975523637-1
+    author: morha (generated)
     changes:
     - createTable:
         columns:
@@ -21,8 +35,8 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: labels
 - changeSet:
-    id: 1682355152223-2
-    author: MPA (generated)
+    id: 1692975523637-2
+    author: morha (generated)
     changes:
     - createTable:
         columns:
@@ -42,8 +56,8 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: statuses
 - changeSet:
-    id: 1682355152223-3
-    author: MPA (generated)
+    id: 1692975523637-3
+    author: morha (generated)
     changes:
     - createTable:
         columns:
@@ -59,8 +73,8 @@ databaseChangeLog:
             type: BIGINT
         tableName: task_label
 - changeSet:
-    id: 1682355152223-4
-    author: MPA (generated)
+    id: 1692975523637-4
+    author: morha (generated)
     changes:
     - createTable:
         columns:
@@ -92,8 +106,8 @@ databaseChangeLog:
             type: BIGINT
         tableName: tasks
 - changeSet:
-    id: 1682355152223-5
-    author: MPA (generated)
+    id: 1692975523637-5
+    author: morha (generated)
     changes:
     - createTable:
         columns:
@@ -122,8 +136,8 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: users
 - changeSet:
-    id: 1682355152223-6
-    author: MPA (generated)
+    id: 1692975523637-6
+    author: morha (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: task_id
@@ -135,8 +149,8 @@ databaseChangeLog:
         referencedTableName: tasks
         validate: true
 - changeSet:
-    id: 1682355152223-7
-    author: MPA (generated)
+    id: 1692975523637-7
+    author: morha (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: executor_id
@@ -148,8 +162,8 @@ databaseChangeLog:
         referencedTableName: users
         validate: true
 - changeSet:
-    id: 1682355152223-8
-    author: MPA (generated)
+    id: 1692975523637-8
+    author: morha (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: label_id
@@ -161,8 +175,8 @@ databaseChangeLog:
         referencedTableName: labels
         validate: true
 - changeSet:
-    id: 1682355152223-9
-    author: MPA (generated)
+    id: 1692975523637-9
+    author: morha (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: task_status_id
@@ -174,8 +188,8 @@ databaseChangeLog:
         referencedTableName: statuses
         validate: true
 - changeSet:
-    id: 1682355152223-10
-    author: MPA (generated)
+    id: 1692975523637-10
+    author: morha (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: author_id
@@ -186,6 +200,4 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: users
         validate: true
-
-databaseChangeLog: []
 

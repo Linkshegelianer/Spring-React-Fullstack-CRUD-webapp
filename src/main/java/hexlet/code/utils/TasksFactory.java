@@ -16,6 +16,6 @@ public final class TasksFactory {
     private final UserService userService;
 
     public TaskBuilder builder(Task task) {
-        return new DefaultTaskBuilder(statusService, labelService, userService, task);
+        return new TaskBuilder(statusService, labelService, userService, task);
     }
 }

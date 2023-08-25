@@ -2,8 +2,6 @@ package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import hexlet.code.domain.dto.LabelDTO;
-//import hexlet.code.domain.dto.LabelRequestDTO;
-//import hexlet.code.domain.dto.LabelResponseDTO;
 import hexlet.code.domain.model.Label;
 import hexlet.code.domain.model.User;
 import hexlet.code.repository.LabelRepository;
