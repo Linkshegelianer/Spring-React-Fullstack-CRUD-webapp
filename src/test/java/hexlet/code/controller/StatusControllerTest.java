@@ -2,7 +2,6 @@ package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import hexlet.code.domain.dto.StatusDTO;
-//import hexlet.code.domain.dto.StatusResponseDTO;
 import hexlet.code.domain.model.Status;
 import hexlet.code.domain.model.User;
 import hexlet.code.repository.StatusRepository;
@@ -29,10 +28,17 @@ import java.util.Optional;
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application.properties")
