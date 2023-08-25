@@ -5,6 +5,7 @@ import hexlet.code.domain.mapper.UserModelMapper;
 import hexlet.code.domain.model.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,39 +17,11 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserModelMapper userMapper;
     private final PasswordEncoder bCryptPasswordEncoder;
-
-    public UserServiceImpl(UserRepository userRepository,
-                       UserModelMapper userMapper,
-                       PasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-    public List<User> findAllUsers() {
-        return userRepository.findAllByOrderByIdAsc();
-    }
-
-    public User findUserById(Long id) {
-        if (id != null) {
-            return userRepository.findUserById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("User with id='%d' not found!".formatted(id)));
-        }
-        return null;
-    }
-
-    public User getUserReferenceById(long id) {
-        return userRepository.getReferenceById(id);
-    }
-
-    public User findUserByEmail(String email) {
-        return userRepository.findUserByEmailIgnoreCase(email)
-                .orElseThrow(() -> new EntityNotFoundException("User with email '%s' not found!".formatted(email)));
-    }
 
     @Transactional
     public User createUser(UserRequestDTO dto) {
@@ -61,9 +34,30 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(newUser);
     }
 
+    public List<User> getAllUsers() {
+        return userRepository.findAllByOrderByIdAsc();
+    }
+
+    public User getUserById(Long id) {
+        if (id != null) {
+            return userRepository.findUserById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("User with id='%d' not found!".formatted(id)));
+        }
+        return null;
+    }
+
+    public User getUserReferenceById(long id) {
+        return userRepository.getReferenceById(id);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmailIgnoreCase(email)
+                .orElseThrow(() -> new EntityNotFoundException("User with email '%s' not found!".formatted(email)));
+    }
+
     @Transactional
     public User updateUser(long id, UserRequestDTO dto, UserDetails authDetails) {
-        User userToUpdate = findUserById(id);
+        User userToUpdate = getUserById(id);
         validateOwnerByEmail(userToUpdate.getEmail(), authDetails);
         userToUpdate.setFirstName(dto.getFirstName());
         userToUpdate.setLastName(dto.getLastName());
@@ -75,7 +69,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public void deleteUser(long id, UserDetails authDetails) {
-        User existedUser = findUserById(id);
+        User existedUser = getUserById(id);
         validateOwnerByEmail(existedUser.getEmail(), authDetails);
         userRepository.delete(existedUser);
     }

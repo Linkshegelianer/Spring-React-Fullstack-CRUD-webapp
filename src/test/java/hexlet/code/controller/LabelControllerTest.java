@@ -46,9 +46,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class LabelControllerTest {
 
-    private static final String TEST_LABEL_NAME_1 = "Лэйбл #1";
-    private static final String TEST_LABEL_NAME_2 = "Лэйбл #2";
-    private static final String TEST_UPDATED_LABEL_NAME = "Измененный лэйбл";
+    private static final String TEST_LABEL_1 = "Label 1";
+    private static final String TEST_LABEL_2 = "Label 2";
+    private static final String TEST_UPDATED_LABEL = "Updated label";
     private String token;
 
     @Autowired
@@ -81,11 +81,29 @@ class LabelControllerTest {
     }
 
     @Test
+    void testCreateLabel() throws Exception {
+        long expectedCountInDB = 0;
+        long actualCount = labelRepository.count();
+
+        assertEquals(expectedCountInDB, actualCount);
+
+        createLabel(TEST_LABEL_1)
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name", is(TEST_LABEL_1)));
+
+        expectedCountInDB = 1;
+        actualCount = labelRepository.count();
+
+        assertEquals(expectedCountInDB, actualCount);
+    }
+
+    @Test
     void testFindAllLabels() throws Exception {
-        createLabel(TEST_LABEL_NAME_1)
+        createLabel(TEST_LABEL_1)
             .andExpect(status().isCreated());
 
-        createLabel(TEST_LABEL_NAME_2)
+        createLabel(TEST_LABEL_2)
             .andExpect(status().isCreated());
 
         MockHttpServletResponse response = mvc.perform(get("/api/labels")
@@ -101,13 +119,13 @@ class LabelControllerTest {
         int actual = labelDTOList.size();
 
         assertEquals(expectedDtoCount, actual);
-        assertEquals(TEST_LABEL_NAME_1, labelDTOList.get(0).getName());
-        assertEquals(TEST_LABEL_NAME_2, labelDTOList.get(1).getName());
+        assertEquals(TEST_LABEL_1, labelDTOList.get(0).getName());
+        assertEquals(TEST_LABEL_2, labelDTOList.get(1).getName());
     }
 
     @Test
     void testFindLabelById() throws Exception {
-        createLabel(TEST_LABEL_NAME_1)
+        createLabel(TEST_LABEL_1)
             .andExpect(status().isCreated());
 
         Label existedLabel = labelRepository.findAll().get(0);
@@ -128,31 +146,13 @@ class LabelControllerTest {
     }
 
     @Test
-    void testCreateLabel() throws Exception {
-        long expectedCountInDB = 0;
-        long actualCount = labelRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-
-        createLabel(TEST_LABEL_NAME_1)
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.name", is(TEST_LABEL_NAME_1)));
-
-        expectedCountInDB = 1;
-        actualCount = labelRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-    }
-
-    @Test
     void testUpdateLabel() throws Exception {
-        createLabel(TEST_LABEL_NAME_1)
+        createLabel(TEST_LABEL_1)
             .andExpect(status().isCreated());
 
         Label labelToUpdate = labelRepository.findAll().get(0);
         long labelId = labelToUpdate.getId();
-        LabelRequestDTO dto = new LabelRequestDTO(TEST_UPDATED_LABEL_NAME);
+        LabelRequestDTO dto = new LabelRequestDTO(TEST_UPDATED_LABEL);
 
         mvc.perform(put("/api/labels/%d".formatted(labelId))
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
@@ -161,17 +161,17 @@ class LabelControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", is(labelId), Long.class))
-            .andExpect(jsonPath("$.name", is(TEST_UPDATED_LABEL_NAME)));
+            .andExpect(jsonPath("$.name", is(TEST_UPDATED_LABEL)));
 
         Optional<Label> actual = labelRepository.findLabelById(labelId);
 
         assertNotNull(actual.orElse(null));
-        assertEquals(TEST_UPDATED_LABEL_NAME, actual.get().getName());
+        assertEquals(TEST_UPDATED_LABEL, actual.get().getName());
     }
 
     @Test
     void testDeleteLabel() throws Exception {
-        createLabel(TEST_LABEL_NAME_1)
+        createLabel(TEST_LABEL_1)
             .andExpect(status().isCreated());
 
         Label labelToDelete = labelRepository.findAll().get(0);

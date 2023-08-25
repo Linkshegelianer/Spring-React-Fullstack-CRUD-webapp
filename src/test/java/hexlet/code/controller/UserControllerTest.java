@@ -47,10 +47,10 @@ class UserControllerTest {
 
     private static final String TEST_EMAIL_1 = "email.1@testmail.com";
     private static final String TEST_EMAIL_2 = "email.2@testmail.com";
-    private static final String TEST_FIRST_NAME = "TEST_FirstName";
-    private static final String TEST_LAST_NAME = "TEST_LastName";
-    private static final String TEST_UPDATED_LAST_NAME = "TEST_UpdatedLastName";
-    private static final String TEST_PASS = "pass";
+    private static final String TEST_FIRST_NAME = "First Name";
+    private static final String TEST_LAST_NAME = "Last Name";
+    private static final String TEST_UPDATED_LAST_NAME = "Updated Last Name";
+    private static final String TEST_PASSWORD = "password";
 
     @Autowired
     private MockMvc mvc;
@@ -68,6 +68,24 @@ class UserControllerTest {
         taskRepository.deleteAll();
         statusRepository.deleteAll();
         userRepository.deleteAll();
+    }
+
+    @Test
+    void testCreateUser() throws Exception {
+        long expectedCountInDB = 0;
+        long actualCount = userRepository.count();
+
+        assertEquals(expectedCountInDB, actualCount);
+
+        registerUser(TEST_EMAIL_1)
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.email", is(TEST_EMAIL_1)));
+
+        expectedCountInDB = 1;
+        actualCount = userRepository.count();
+
+        assertEquals(expectedCountInDB, actualCount);
     }
 
     @Test
@@ -122,26 +140,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testRegisterUser() throws Exception { // ok
-        long expectedCountInDB = 0;
-        long actualCount = userRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-
-        registerUser(TEST_EMAIL_1)
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.email", is(TEST_EMAIL_1)));
-
-        expectedCountInDB = 1;
-        actualCount = userRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-    }
-
-
-    @Test
-    void testUpdateUser() throws Exception { // Status expected:<200> but was:<403>
+    void testUpdateUser() throws Exception {
         registerUser(TEST_EMAIL_1)
             .andExpect(status().isCreated());
 
@@ -171,7 +170,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testDeleteUser() throws Exception { // Status expected:<200> but was:<403>
+    void testDeleteUser() throws Exception {
         registerUser(TEST_EMAIL_1)
             .andExpect(status().isCreated());
 
@@ -225,7 +224,7 @@ class UserControllerTest {
             email,
             TEST_FIRST_NAME,
             TEST_LAST_NAME,
-            TEST_PASS
+                TEST_PASSWORD
         );
 
         return mvc.perform(post("/api/users")
@@ -234,7 +233,7 @@ class UserControllerTest {
     }
 
     private ResultActions signIn(String email) throws Exception {
-        LogInRequestDTO logInRequestDTO = new LogInRequestDTO(email, TEST_PASS);
+        LogInRequestDTO logInRequestDTO = new LogInRequestDTO(email, TEST_PASSWORD);
 
         return mvc.perform(post("/api/login")
             .content(utils.toJson(logInRequestDTO))
@@ -246,7 +245,7 @@ class UserControllerTest {
             email,
             TEST_FIRST_NAME,
             newLastName,
-            TEST_PASS
+                TEST_PASSWORD
         );
     }
 }

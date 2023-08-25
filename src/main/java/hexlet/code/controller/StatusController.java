@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,16 +27,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("${base.url}" + "/statuses")
 public class StatusController {
 
     private final StatusService statusService;
     private final StatusModelMapper statusMapper;
 
-    public StatusController(StatusService statusService,
-                            StatusModelMapper statusMapper) {
-        this.statusService = statusService;
-        this.statusMapper = statusMapper;
+    @Operation(summary = "Create new task status")
+    @ApiResponse(responseCode = "201", description = "New task status successfully created",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Status.class))})
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public StatusResponseDTO createStatus(@RequestBody @Valid StatusRequestDTO dto) {
+        Status createdStatus = statusService.createStatus(dto);
+        return statusMapper.toTaskStatusResponseDTO(createdStatus);
     }
 
     @Operation(summary = "Get all task statuses")
@@ -43,7 +49,7 @@ public class StatusController {
             content = @Content(schema = @Schema(implementation = Status.class)))
     @GetMapping
     public List<StatusResponseDTO> findAllStatuses() {
-        List<Status> existedStatuses = statusService.findAllStatuses();
+        List<Status> existedStatuses = statusService.getAllStatuses();
         return existedStatuses.stream()
             .map(statusMapper::toTaskStatusResponseDTO)
             .collect(Collectors.toList());
@@ -57,18 +63,8 @@ public class StatusController {
             @ApiResponse(responseCode = "404", description = "No such task status found", content = @Content)})
     @GetMapping(path = "/{id}")
     public StatusResponseDTO findStatusById(@PathVariable(name = "id") long id) {
-        Status existedStatus = statusService.findStatusById(id);
+        Status existedStatus = statusService.getStatusById(id);
         return statusMapper.toTaskStatusResponseDTO(existedStatus);
-    }
-
-    @Operation(summary = "Create new task status")
-    @ApiResponse(responseCode = "201", description = "New task status successfully created",
-            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Status.class))})
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public StatusResponseDTO createStatus(@RequestBody @Valid StatusRequestDTO dto) {
-        Status createdStatus = statusService.createStatus(dto);
-        return statusMapper.toTaskStatusResponseDTO(createdStatus);
     }
 
     @Operation(summary = "Update the task status by id")

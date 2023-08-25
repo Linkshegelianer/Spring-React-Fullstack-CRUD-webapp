@@ -44,7 +44,7 @@ public class DefaultTaskBuilder implements TaskBuilder {
 
     @Override
     public TaskBuilder setTaskStatus(Long taskStatusId) {
-        Status status = statusService.findStatusById(taskStatusId);
+        Status status = statusService.getStatusById(taskStatusId);
         this.task.setTaskStatus(status);
         return this;
     }
@@ -52,7 +52,7 @@ public class DefaultTaskBuilder implements TaskBuilder {
     @Override
     public TaskBuilder setLabels(List<Long> labelIds) {
         if (labelIds != null) {
-            List<Label> labels = labelService.findAllLabelsById(labelIds);
+            List<Label> labels = labelService.getAllLabelsById(labelIds);
             this.task.setLabels(labels);
         }
         return this;
@@ -60,7 +60,7 @@ public class DefaultTaskBuilder implements TaskBuilder {
 
     @Override
     public TaskBuilder setAuthor(String authorEmail) {
-        User author = userService.findUserByEmail(authorEmail);
+        User author = userService.getUserByEmail(authorEmail);
         this.task.setAuthor(author);
         return this;
     }
@@ -68,7 +68,7 @@ public class DefaultTaskBuilder implements TaskBuilder {
     @Override
     public TaskBuilder setExecutor(Long executorId) {
         if (executorId != null) {
-            User executor = userService.findUserById(executorId);
+            User executor = userService.getUserById(executorId);
             this.task.setExecutor(executor);
         }
         return this;

@@ -13,13 +13,12 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface TaskService {
 
-
-    public List<Task> findTasksByParams(Predicate predicate);
-
-    public Task findTaskById(long id);
-
     @Transactional
     public Task createTask(TaskRequestDTO dto, UserDetails authDetails);
+
+    public List<Task> getTasksByParams(Predicate predicate);
+
+    public Task getTaskById(long id);
 
     @Transactional
     public Task updateTask(long id, TaskRequestDTO dto, UserDetails authDetails);

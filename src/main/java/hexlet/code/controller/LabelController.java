@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,16 +27,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("${base.url}" + "/labels")
 public class LabelController {
 
     private final LabelService labelService;
     private final LabelModelMapper labelMapper;
 
-    public LabelController(LabelService labelService,
-                           LabelModelMapper labelMapper) {
-        this.labelService = labelService;
-        this.labelMapper = labelMapper;
+    @Operation(summary = "Create new label")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "The label has been successfully created",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Label.class))})})
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public LabelResponseDTO createLabel(@RequestBody @Valid LabelRequestDTO dto) {
+        Label createdLabel = labelService.createLabel(dto);
+        return labelMapper.toLabelResponseDTO(createdLabel);
     }
 
     @Operation(summary = "Get all labels")
@@ -43,7 +50,7 @@ public class LabelController {
             content = @Content(schema = @Schema(implementation = Label.class)))
     @GetMapping
     public List<LabelResponseDTO> findAllLabels() {
-        List<Label> existedLabels = labelService.findAllLabels();
+        List<Label> existedLabels = labelService.getAllLabels();
         return existedLabels.stream()
             .map(labelMapper::toLabelResponseDTO)
             .collect(Collectors.toList());
@@ -57,19 +64,8 @@ public class LabelController {
             @ApiResponse(responseCode = "404", description = "No such label found", content = @Content)})
     @GetMapping(path = "/{id}")
     public LabelResponseDTO findLabelById(@PathVariable(name = "id") long id) {
-        Label existedLabel = labelService.findLabelById(id);
+        Label existedLabel = labelService.getLabelById(id);
         return labelMapper.toLabelResponseDTO(existedLabel);
-    }
-
-    @Operation(summary = "Create new label")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "The label has been successfully created",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Label.class))})})
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public LabelResponseDTO createLabel(@RequestBody @Valid LabelRequestDTO dto) {
-        Label createdLabel = labelService.createLabel(dto);
-        return labelMapper.toLabelResponseDTO(createdLabel);
     }
 
     @Operation(summary = "Update the label by id")

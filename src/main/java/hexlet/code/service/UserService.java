@@ -1,12 +1,8 @@
 package hexlet.code.service;
 
-import hexlet.code.domain.mapper.UserModelMapper;
 import hexlet.code.domain.dto.UserRequestDTO;
 import hexlet.code.domain.model.User;
-import hexlet.code.exception.NotFoundException;
-import hexlet.code.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,16 +12,16 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface UserService {
 
-    public List<User> findAllUsers();
+    @Transactional
+    public User createUser(UserRequestDTO dto);
 
-    public User findUserById(Long id);
+    public List<User> getAllUsers();
+
+    public User getUserById(Long id);
 
     public User getUserReferenceById(long id);
 
-    public User findUserByEmail(String email);
-
-    @Transactional
-    public User createUser(UserRequestDTO dto);
+    public User getUserByEmail(String email);
 
     @Transactional
     public User updateUser(long id, UserRequestDTO dto, UserDetails authDetails);

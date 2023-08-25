@@ -1,5 +1,9 @@
 package hexlet.code.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.CascadeType;
@@ -19,6 +23,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity @Table(name = "tasks")
 public class Task {
 
@@ -48,85 +56,4 @@ public class Task {
 
     @CreationTimestamp
     private Instant createdAt;
-
-    public Task() {
-    }
-
-    public Task(String name,
-                String description,
-                Status taskStatus,
-                List<Label> labels,
-                User author,
-                User executor) {
-        this.name = name;
-        this.description = description;
-        this.taskStatus = taskStatus;
-        this.labels = labels;
-        this.author = author;
-        this.executor = executor;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Status getTaskStatus() {
-        return taskStatus;
-    }
-
-    public void setTaskStatus(Status taskStatus) {
-        this.taskStatus = taskStatus;
-    }
-
-    public List<Label> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(List<Label> labels) {
-        this.labels = labels;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    public User getExecutor() {
-        return executor;
-    }
-
-    public void setExecutor(User executor) {
-        this.executor = executor;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
 }

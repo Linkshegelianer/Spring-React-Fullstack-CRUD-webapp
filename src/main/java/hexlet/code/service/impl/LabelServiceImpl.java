@@ -5,6 +5,7 @@ import hexlet.code.domain.mapper.LabelModelMapper;
 import hexlet.code.domain.model.Label;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.service.LabelService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,22 +16,23 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
+@AllArgsConstructor
 public class LabelServiceImpl implements LabelService {
 
     private final LabelRepository labelRepository;
     private final LabelModelMapper labelMapper;
 
-    public LabelServiceImpl(LabelRepository labelRepository,
-                        LabelModelMapper labelMapper) {
-        this.labelRepository = labelRepository;
-        this.labelMapper = labelMapper;
+    @Transactional
+    public Label createLabel(LabelRequestDTO dto) {
+        Label newLabel = labelMapper.toLabelModel(dto);
+        return labelRepository.save(newLabel);
     }
 
-    public List<Label> findAllLabels() {
+    public List<Label> getAllLabels() {
         return labelRepository.findAllByOrderByIdAsc();
     }
 
-    public List<Label> findAllLabelsById(List<Long> labelIds) {
+    public List<Label> getAllLabelsById(List<Long> labelIds) {
         if (labelIds != null) {
             return labelRepository.findAllById(labelIds);
         }
@@ -43,27 +45,21 @@ public class LabelServiceImpl implements LabelService {
                 .collect(Collectors.toList());
     }
 
-    public Label findLabelById(long id) {
+    public Label getLabelById(long id) {
         return labelRepository.findLabelById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Label with id='%d' not found!".formatted(id)));
     }
 
     @Transactional
-    public Label createLabel(LabelRequestDTO dto) {
-        Label newLabel = labelMapper.toLabelModel(dto);
-        return labelRepository.save(newLabel);
-    }
-
-    @Transactional
     public Label updateLabel(long id, LabelRequestDTO dto) {
-        Label labelToUpdate = findLabelById(id);
+        Label labelToUpdate = getLabelById(id);
         labelToUpdate.setName(dto.getName());
         return labelToUpdate;
     }
 
     @Transactional
     public void deleteLabel(long id) {
-        Label existedLabel = findLabelById(id);
+        Label existedLabel = getLabelById(id);
         labelRepository.delete(existedLabel);
     }
 }

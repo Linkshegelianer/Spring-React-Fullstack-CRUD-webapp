@@ -12,11 +12,11 @@ public class TestUtils {
 
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper().findAndRegisterModules();
 
-    private static final String DEFAULT_EMAIL = "default@testmail.com";
-    private static final String DEFAULT_FIRST_NAME = "DEFAULT_FirstName";
-    private static final String DEFAULT_LAST_NAME = "DEFAULT_LastName";
-    private static final String DEFAULT_PASS = "pass";
-    public static final String TOKEN_PREFIX = "Bearer ";
+    private static final String DEFAULT_EMAIL = "default@mail.com";
+    private static final String DEFAULT_FIRST_NAME = "First Name";
+    private static final String DEFAULT_LAST_NAME = "Last Name";
+    private static final String DEFAULT_PASSWORD = "password";
+    public static final String TOKEN_PREFIX = "Bearer";
 
     public String toJson(Object object) throws JsonProcessingException {
         return JSON_MAPPER.writeValueAsString(object);
@@ -31,7 +31,7 @@ public class TestUtils {
         user.setFirstName(DEFAULT_FIRST_NAME);
         user.setLastName(DEFAULT_LAST_NAME);
         user.setEmail(email);
-        user.setPassword(DEFAULT_PASS);
+        user.setPassword(DEFAULT_PASSWORD);
         return user;
     }
 

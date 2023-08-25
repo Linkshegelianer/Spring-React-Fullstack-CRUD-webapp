@@ -8,6 +8,7 @@ import hexlet.code.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,15 +28,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("${base.url}" + "/users")
 public class UserController {
 
     private final UserService userService;
     private final UserModelMapper userMapper;
 
-    public UserController(UserService userService, UserModelMapper userMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
+    @Operation(summary = "Create new user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User registered"),
+            @ApiResponse(responseCode = "404", description = "User with that id not found"),
+            @ApiResponse(responseCode = "422", description = "User data is incorrect"),
+    })
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponseDTO createUser(@RequestBody @Valid UserRequestDTO dto,
+                                      BindingResult bindingResult) {
+        User createdUser = userService.createUser(dto);
+        return userMapper.toUserResponseDTO(createdUser);
     }
 
     @Operation(summary = "Get list of all users")
@@ -44,7 +55,7 @@ public class UserController {
     })
     @GetMapping
     public List<UserResponseDTO> findAllUsers() {
-        List<User> existedUsers = userService.findAllUsers();
+        List<User> existedUsers = userService.getAllUsers();
         return existedUsers.stream()
             .map(userMapper::toUserResponseDTO)
             .collect(Collectors.toList());
@@ -57,22 +68,8 @@ public class UserController {
     })
     @GetMapping(path = "/{id}")
     public UserResponseDTO findUserById(@PathVariable(name = "id") long id) {
-        User existedUser = userService.findUserById(id);
+        User existedUser = userService.getUserById(id);
         return userMapper.toUserResponseDTO(existedUser);
-    }
-
-    @Operation(summary = "Register new user")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "User registered"),
-        @ApiResponse(responseCode = "404", description = "User with that id not found"),
-        @ApiResponse(responseCode = "422", description = "User data is incorrect"),
-    })
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDTO registerUser(@RequestBody @Valid UserRequestDTO dto,
-                                        BindingResult bindingResult) {
-        User createdUser = userService.createUser(dto);
-        return userMapper.toUserResponseDTO(createdUser);
     }
 
     @Operation(summary = "Update user by his id")

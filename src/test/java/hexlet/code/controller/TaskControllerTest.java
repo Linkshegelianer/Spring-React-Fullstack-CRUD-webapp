@@ -47,14 +47,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class TaskControllerTest {
 
-    private static final String TEST_TASK_NAME = "Тестовая задача";
-    private static final String TEST_TASK_DESCRIPTION = "Тестовое описание";
-    private static final String TEST_UPDATED_TASK_NAME = "Измененная задача";
-    private static final String TEST_UPDATED_TASK_DESCRIPTION = "Измененное описание";
-    private static final String TEST_EMAIL_1 = "email.1@testmail.com";
-    private static final String TEST_EMAIL_2 = "email.2@testmail.com";
-    private static final String TEST_STATUS_NAME_1 = "Новая";
-    private static final String TEST_STATUS_NAME_2 = "В работе";
+    private static final String TEST_TASK = "Test task";
+    private static final String TEST_TASK_DESCRIPTION = "Test task description";
+    private static final String TEST_UPDATED_TASK = "Updated task";
+    private static final String TEST_UPDATED_TASK_DESCRIPTION = "Updated task description";
+    private static final String TEST_EMAIL_1 = "test1@mail.com";
+    private static final String TEST_EMAIL_2 = "test2@mail.com";
+    private static final String TEST_STATUS_1 = "New";
+    private static final String TEST_STATUS_2 = "In process";
 
     private User testAuthor;
     private User testExecutor;
@@ -80,8 +80,8 @@ class TaskControllerTest {
     void beforeEach() {
         testAuthor = userRepository.save(testUtils.buildDefaultUser(TEST_EMAIL_1));
         testExecutor = userRepository.save(testUtils.buildDefaultUser(TEST_EMAIL_2));
-        testStatusNew = statusRepository.save(testUtils.buildDefaultStatus(TEST_STATUS_NAME_1));
-        testStatusInProgress = statusRepository.save(testUtils.buildDefaultStatus(TEST_STATUS_NAME_2));
+        testStatusNew = statusRepository.save(testUtils.buildDefaultStatus(TEST_STATUS_1));
+        testStatusInProgress = statusRepository.save(testUtils.buildDefaultStatus(TEST_STATUS_2));
         authorToken = jwtUtils.generateToken(testAuthor);
         executorToken = jwtUtils.generateToken(testExecutor);
     }
@@ -91,6 +91,25 @@ class TaskControllerTest {
         taskRepository.deleteAll();
         statusRepository.deleteAll();
         userRepository.deleteAll();
+    }
+
+    @Test
+    void testCreateTask() throws Exception {
+        long expectedCountInDB = 0;
+        long actualCount = taskRepository.count();
+
+        assertEquals(expectedCountInDB, actualCount);
+
+        createTask()
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name", is(TEST_TASK)))
+                .andExpect(jsonPath("$.description", is(TEST_TASK_DESCRIPTION)));
+
+        expectedCountInDB = 1;
+        actualCount = taskRepository.count();
+
+        assertEquals(expectedCountInDB, actualCount);
     }
 
     @Test
@@ -110,8 +129,8 @@ class TaskControllerTest {
         int actual = taskDTOList.size();
 
         assertEquals(expectedDtoCount, actual);
-        assertEquals(TEST_TASK_NAME, taskDTOList.get(0).getName());
-        assertEquals(TEST_TASK_NAME, taskDTOList.get(1).getName());
+        assertEquals(TEST_TASK, taskDTOList.get(0).getName());
+        assertEquals(TEST_TASK, taskDTOList.get(1).getName());
     }
 
     @Test
@@ -134,27 +153,8 @@ class TaskControllerTest {
         assertEquals(testAuthor.getId(), taskDTO.getAuthor().getId());
         assertEquals(testExecutor.getId(), taskDTO.getExecutor().getId());
         assertEquals(testStatusNew.getId(), taskDTO.getTaskStatus().getId());
-        assertEquals(TEST_TASK_NAME, taskDTO.getName());
+        assertEquals(TEST_TASK, taskDTO.getName());
         assertEquals(TEST_TASK_DESCRIPTION, taskDTO.getDescription());
-    }
-
-    @Test
-    void testCreateTask() throws Exception {
-        long expectedCountInDB = 0;
-        long actualCount = taskRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-
-        createTask()
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.name", is(TEST_TASK_NAME)))
-            .andExpect(jsonPath("$.description", is(TEST_TASK_DESCRIPTION)));
-
-        expectedCountInDB = 1;
-        actualCount = taskRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
     }
 
     @Test
@@ -164,7 +164,7 @@ class TaskControllerTest {
         Task taskToUpdate = taskRepository.findAll().get(0);
         long taskId = taskToUpdate.getId();
         TaskRequestDTO taskRequestDTO = new TaskRequestDTO(
-            TEST_UPDATED_TASK_NAME,
+                TEST_UPDATED_TASK,
             TEST_UPDATED_TASK_DESCRIPTION,
             testAuthor.getId(),
             testStatusInProgress.getId(),
@@ -178,7 +178,7 @@ class TaskControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", is(taskId), Long.class))
-            .andExpect(jsonPath("$.name", is(TEST_UPDATED_TASK_NAME)))
+            .andExpect(jsonPath("$.name", is(TEST_UPDATED_TASK)))
             .andExpect(jsonPath("$.description", is(TEST_UPDATED_TASK_DESCRIPTION)))
             .andExpect(jsonPath("$.executor.id", is(testAuthor.getId()), Long.class))
             .andExpect(jsonPath("$.taskStatus.id", is(testStatusInProgress.getId()), Long.class));
@@ -186,7 +186,7 @@ class TaskControllerTest {
         Optional<Task> actual = taskRepository.findTaskById(taskId);
 
         assertNotNull(actual.orElse(null));
-        assertEquals(TEST_UPDATED_TASK_NAME, actual.get().getName());
+        assertEquals(TEST_UPDATED_TASK, actual.get().getName());
         assertEquals(TEST_UPDATED_TASK_DESCRIPTION, actual.get().getDescription());
         assertEquals(testAuthor.getId(), actual.get().getAuthor().getId());
         assertEquals(testStatusInProgress.getId(), actual.get().getTaskStatus().getId());
@@ -213,7 +213,7 @@ class TaskControllerTest {
         Task taskToUpdateOrDelete = taskRepository.findAll().get(0);
         long taskId = taskToUpdateOrDelete.getId();
         TaskRequestDTO taskRequestDTO = new TaskRequestDTO(
-            TEST_UPDATED_TASK_NAME,
+                TEST_UPDATED_TASK,
             TEST_UPDATED_TASK_DESCRIPTION,
             testAuthor.getId(),
             testStatusInProgress.getId(),
@@ -233,7 +233,7 @@ class TaskControllerTest {
 
     private ResultActions createTask() throws Exception {
         TaskRequestDTO taskRequestDTO = new TaskRequestDTO(
-            TEST_TASK_NAME,
+                TEST_TASK,
             TEST_TASK_DESCRIPTION,
             testExecutor.getId(),
             testStatusNew.getId(),

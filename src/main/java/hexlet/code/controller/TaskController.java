@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,40 +31,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("${base.url}" + "/tasks")
 public class TaskController {
 
     private final TaskService taskService;
     private final TaskModelMapper taskMapper;
-
-    public TaskController(TaskService taskService, TaskModelMapper taskMapper) {
-        this.taskService = taskService;
-        this.taskMapper = taskMapper;
-    }
-
-    @Operation(summary = "Get task by parameters")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The task is found",
-                    content = {@Content(mediaType = "application/jsom", schema = @Schema(implementation = Task.class))}),
-            @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
-    @GetMapping
-    public List<TaskResponseDTO> findTasksByParams(@QuerydslPredicate(root = Task.class) Predicate predicate) {
-        List<Task> existedTasks = taskService.findTasksByParams(predicate);
-        return existedTasks.stream()
-            .map(taskMapper::toTaskResponseDTO)
-            .collect(Collectors.toList());
-    }
-
-    @Operation(summary = "Get task by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The task is found",
-                    content = {@Content(mediaType = "application/jsom", schema = @Schema(implementation = Task.class))}),
-            @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
-    @GetMapping(path = "/{id}")
-    public TaskResponseDTO findTaskById(@PathVariable(name = "id") long id) {
-        Task existedTask = taskService.findTaskById(id);
-        return taskMapper.toTaskResponseDTO(existedTask);
-    }
 
     @Operation(summary = "Create new task")
     @ApiResponses(value = {
@@ -77,6 +50,30 @@ public class TaskController {
                                       @AuthenticationPrincipal UserDetails authDetails) {
         Task createdTask = taskService.createTask(dto, authDetails);
         return taskMapper.toTaskResponseDTO(createdTask);
+    }
+
+    @Operation(summary = "Get task by parameters")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The task is found",
+                    content = {@Content(mediaType = "application/jsom", schema = @Schema(implementation = Task.class))}),
+            @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
+    @GetMapping
+    public List<TaskResponseDTO> findTasksByParams(@QuerydslPredicate(root = Task.class) Predicate predicate) {
+        List<Task> existedTasks = taskService.getTasksByParams(predicate);
+        return existedTasks.stream()
+            .map(taskMapper::toTaskResponseDTO)
+            .collect(Collectors.toList());
+    }
+
+    @Operation(summary = "Get task by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The task is found",
+                    content = {@Content(mediaType = "application/jsom", schema = @Schema(implementation = Task.class))}),
+            @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
+    @GetMapping(path = "/{id}")
+    public TaskResponseDTO findTaskById(@PathVariable(name = "id") long id) {
+        Task existedTask = taskService.getTaskById(id);
+        return taskMapper.toTaskResponseDTO(existedTask);
     }
 
     @Operation(summary = "Update the task by id")

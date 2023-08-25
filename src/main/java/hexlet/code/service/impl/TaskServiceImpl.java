@@ -6,6 +6,7 @@ import hexlet.code.domain.dto.TaskRequestDTO;
 import hexlet.code.domain.model.Task;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.service.TaskService;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,27 +18,11 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
+@AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final TasksFactory tasksFactory;
-
-    public TaskServiceImpl(TaskRepository taskRepository, TasksFactory tasksFactory) {
-        this.taskRepository = taskRepository;
-        this.tasksFactory = tasksFactory;
-    }
-
-    public List<Task> findTasksByParams(Predicate predicate) {
-        if (predicate == null) {
-            return taskRepository.findAllByOrderByIdAsc();
-        }
-        return taskRepository.findAll(predicate, Sort.by(Sort.Direction.ASC, "id"));
-    }
-
-    public Task findTaskById(long id) {
-        return taskRepository.findTaskById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task with id='%d' not found!".formatted(id)));
-    }
 
     @Transactional
     public Task createTask(TaskRequestDTO dto, UserDetails authDetails) {
@@ -53,9 +38,21 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.save(newTask);
     }
 
+    public List<Task> getTasksByParams(Predicate predicate) {
+        if (predicate == null) {
+            return taskRepository.findAllByOrderByIdAsc();
+        }
+        return taskRepository.findAll(predicate, Sort.by(Sort.Direction.ASC, "id"));
+    }
+
+    public Task getTaskById(long id) {
+        return taskRepository.findTaskById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Task with id='%d' not found!".formatted(id)));
+    }
+
     @Transactional
     public Task updateTask(long id, TaskRequestDTO dto, UserDetails authDetails) {
-        Task existedTask = findTaskById(id);
+        Task existedTask = getTaskById(id);
         validateOwnerByEmail(existedTask.getAuthor().getEmail(), authDetails);
 
         return tasksFactory.builder(existedTask)
@@ -69,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     public void deleteTask(long id, UserDetails authDetails) {
-        Task existedTask = findTaskById(id);
+        Task existedTask = getTaskById(id);
         validateOwnerByEmail(existedTask.getAuthor().getEmail(), authDetails);
         taskRepository.delete(existedTask);
     }

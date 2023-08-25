@@ -11,14 +11,14 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface StatusService {
 
-    public List<Status> findAllStatuses();
-
-    public Status findStatusById(long id);
-
-    public Status getStatusReferenceById(long id);
-
     @Transactional
     public Status createStatus(StatusRequestDTO dto);
+
+    public List<Status> getAllStatuses();
+
+    public Status getStatusById(long id);
+
+    public Status getStatusReferenceById(long id);
 
     @Transactional
     public Status updateStatus(long id, StatusRequestDTO dto);

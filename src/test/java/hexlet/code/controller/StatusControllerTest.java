@@ -5,16 +5,11 @@ import hexlet.code.domain.dto.StatusRequestDTO;
 import hexlet.code.domain.dto.StatusResponseDTO;
 import hexlet.code.domain.model.Status;
 import hexlet.code.domain.model.User;
-import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.StatusRepository;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.security.JWTUtils;
 import hexlet.code.utils.TestUtils;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,26 +29,19 @@ import java.util.Optional;
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT) // Test with a real http server
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application.properties")
 @AutoConfigureMockMvc
 class StatusControllerTest {
 
-    private static final String TEST_STATUS_NAME_1 = "Новая";
-    private static final String TEST_STATUS_NAME_2 = "В работе";
-    private static final String TEST_UPDATED_STATUS_NAME = "Custom status";
+    private static final String TEST_STATUS_1 = "New";
+    private static final String TEST_STATUS_2 = "In process";
+    private static final String TEST_UPDATED_STATUS = "Custom status";
     private String token;
 
     @Autowired
@@ -83,11 +71,29 @@ class StatusControllerTest {
     }
 
     @Test
+    void testCreateStatus() throws Exception {
+        long expectedCountInDB = 0;
+        long actualCount = statusRepository.count();
+
+        assertEquals(expectedCountInDB, actualCount);
+
+        createStatus(TEST_STATUS_1)
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name", is(TEST_STATUS_1)));
+
+        expectedCountInDB = 1;
+        actualCount = statusRepository.count();
+
+        assertEquals(expectedCountInDB, actualCount);
+    }
+
+    @Test
     void testFindAllStatuses() throws Exception {
-        createStatus(TEST_STATUS_NAME_1)
+        createStatus(TEST_STATUS_1)
             .andExpect(status().isCreated());
 
-        createStatus(TEST_STATUS_NAME_2)
+        createStatus(TEST_STATUS_2)
             .andExpect(status().isCreated());
 
         MockHttpServletResponse response = mvc.perform(get("/api/statuses"))
@@ -102,13 +108,13 @@ class StatusControllerTest {
         int actual = statusDTOList.size();
 
         assertEquals(expectedDtoCount, actual);
-        assertEquals(TEST_STATUS_NAME_1, statusDTOList.get(0).getName());
-        assertEquals(TEST_STATUS_NAME_2, statusDTOList.get(1).getName());
+        assertEquals(TEST_STATUS_1, statusDTOList.get(0).getName());
+        assertEquals(TEST_STATUS_2, statusDTOList.get(1).getName());
     }
 
     @Test
     void testFindStatusById() throws Exception {
-        createStatus(TEST_STATUS_NAME_1)
+        createStatus(TEST_STATUS_1)
             .andExpect(status().isCreated());
 
         Status existedStatus = statusRepository.findAll().get(0);
@@ -128,31 +134,13 @@ class StatusControllerTest {
     }
 
     @Test
-    void testCreateStatus() throws Exception {
-        long expectedCountInDB = 0;
-        long actualCount = statusRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-
-        createStatus(TEST_STATUS_NAME_1)
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.name", is(TEST_STATUS_NAME_1)));
-
-        expectedCountInDB = 1;
-        actualCount = statusRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-    }
-
-    @Test
     void testUpdateStatus() throws Exception {
-        createStatus(TEST_STATUS_NAME_1)
+        createStatus(TEST_STATUS_1)
             .andExpect(status().isCreated());
 
         Status statusToUpdate = statusRepository.findAll().get(0);
         long statusId = statusToUpdate.getId();
-        StatusRequestDTO dto = new StatusRequestDTO(TEST_UPDATED_STATUS_NAME);
+        StatusRequestDTO dto = new StatusRequestDTO(TEST_UPDATED_STATUS);
 
         mvc.perform(put("/api/statuses/%d".formatted(statusId))
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
@@ -161,17 +149,17 @@ class StatusControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", is(statusId), Long.class))
-            .andExpect(jsonPath("$.name", is(TEST_UPDATED_STATUS_NAME)));
+            .andExpect(jsonPath("$.name", is(TEST_UPDATED_STATUS)));
 
         Optional<Status> actual = statusRepository.findTaskStatusById(statusId);
 
         assertNotNull(actual.orElse(null));
-        assertEquals(TEST_UPDATED_STATUS_NAME, actual.get().getName());
+        assertEquals(TEST_UPDATED_STATUS, actual.get().getName());
     }
 
     @Test
     void testDeleteStatus() throws Exception {
-        createStatus(TEST_STATUS_NAME_1)
+        createStatus(TEST_STATUS_1)
             .andExpect(status().isCreated());
 
         Status statusToDelete = statusRepository.findAll().get(0);

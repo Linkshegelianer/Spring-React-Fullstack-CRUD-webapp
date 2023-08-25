@@ -6,22 +6,18 @@ import hexlet.code.exception.SignInException;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.security.JWTUtils;
 import hexlet.code.service.LogInService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
+@AllArgsConstructor
 public class LogInServiceImpl implements LogInService {
     private final UserRepository userRepository;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final JWTUtils jwtUtils;
-
-    public LogInServiceImpl(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder, JWTUtils jwtUtils) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.jwtUtils = jwtUtils;
-    }
 
     @Override
     public String authenticate(LogInRequestDTO logInDTO) {

@@ -16,6 +16,5 @@ public interface TaskRepository extends JpaRepository<Task, Long>, QuerydslPredi
     List<Task> findAllByOrderByIdAsc();
     Optional<Task> findTaskById(long id);
 
-    @Override
     List<Task> findAll(Predicate predicate, Sort sort);
 }
