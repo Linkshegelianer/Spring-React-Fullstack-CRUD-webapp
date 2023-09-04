@@ -36,7 +36,8 @@ public class LabelController {
     @Operation(summary = "Create new label")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "The label has been successfully created",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Label.class))})})
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Label.class))})})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public LabelDTO createLabel(@RequestBody @Valid LabelDTO dto) {
