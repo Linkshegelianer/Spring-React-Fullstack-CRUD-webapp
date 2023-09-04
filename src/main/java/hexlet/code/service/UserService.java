@@ -13,19 +13,19 @@ import java.util.List;
 public interface UserService {
 
     @Transactional
-    public User createUser(UserRequestDTO dto);
+    User createUser(UserRequestDTO dto);
 
-    public List<User> getAllUsers();
+    List<User> getAllUsers();
 
-    public User getUserById(Long id);
+    User getUserById(Long id);
 
-    public User getUserReferenceById(long id);
+    User getUserReferenceById(long id);
 
-    public User getUserByEmail(String email);
-
-    @Transactional
-    public User updateUser(long id, UserRequestDTO dto, UserDetails authDetails);
+    User getUserByEmail(String email);
 
     @Transactional
-    public void deleteUser(long id, UserDetails authDetails);
+    User updateUser(long id, UserRequestDTO dto, UserDetails authDetails);
+
+    @Transactional
+    void deleteUser(long id, UserDetails authDetails);
 }

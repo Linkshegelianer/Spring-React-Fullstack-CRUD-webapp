@@ -2,7 +2,6 @@ package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import hexlet.code.domain.dto.TaskDTO;
-//import hexlet.code.domain.dto.TaskResponseDTO;
 import hexlet.code.domain.model.Status;
 import hexlet.code.domain.model.Task;
 import hexlet.code.domain.model.User;

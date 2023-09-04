@@ -1,8 +1,6 @@
 package hexlet.code.service.impl;
 
 import com.querydsl.core.types.Predicate;
-//import hexlet.code.utils.DefaultTaskBuilder;
-import hexlet.code.utils.TaskBuilder;
 import hexlet.code.utils.TasksFactory;
 import hexlet.code.domain.dto.TaskDTO;
 import hexlet.code.domain.model.Task;
@@ -25,8 +23,6 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final TasksFactory tasksFactory;
-
-//    private final TaskBuilder taskBuilder;
 
     @Transactional
     public Task createTask(TaskDTO dto, UserDetails authDetails) {

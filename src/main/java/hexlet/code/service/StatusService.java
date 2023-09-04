@@ -12,17 +12,17 @@ import java.util.List;
 public interface StatusService {
 
     @Transactional
-    public Status createStatus(StatusDTO dto);
+    Status createStatus(StatusDTO dto);
 
-    public List<Status> getAllStatuses();
+    List<Status> getAllStatuses();
 
-    public Status getStatusById(long id);
+    Status getStatusById(long id);
 
-    public Status getStatusReferenceById(long id);
-
-    @Transactional
-    public Status updateStatus(long id, StatusDTO dto);
+    Status getStatusReferenceById(long id);
 
     @Transactional
-    public void deleteStatus(long id);
+    Status updateStatus(long id, StatusDTO dto);
+
+    @Transactional
+    void deleteStatus(long id);
 }

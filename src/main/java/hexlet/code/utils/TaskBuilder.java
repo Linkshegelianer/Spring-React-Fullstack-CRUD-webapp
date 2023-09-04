@@ -8,11 +8,9 @@ import hexlet.code.service.LabelService;
 import hexlet.code.service.StatusService;
 import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-//@Component
 @AllArgsConstructor
 public final class TaskBuilder {
 
@@ -64,9 +62,5 @@ public final class TaskBuilder {
 
     public Task build() {
         return this.task;
-    }
-
-    public TaskBuilder builder(Task task) {
-        return new TaskBuilder(statusService, labelService, userService, task);
     }
 }

@@ -4,5 +4,5 @@ import hexlet.code.domain.dto.LogInDTO;
 
 public interface LogInService {
 
-    public String authenticate(LogInDTO logInDTO);
+    String authenticate(LogInDTO logInDTO);
 }

@@ -8,19 +8,19 @@ import java.util.List;
 public interface LabelService {
 
     @Transactional
-    public Label createLabel(LabelDTO dto);
+    Label createLabel(LabelDTO dto);
 
-    public List<Label> getAllLabels();
+    List<Label> getAllLabels();
 
-    public List<Label> getAllLabelsById(List<Long> labelIds);
+    List<Label> getAllLabelsById(List<Long> labelIds);
 
-    public List<Label> getAllLabelReferencesById(List<Long> labelIds);
+    List<Label> getAllLabelReferencesById(List<Long> labelIds);
 
-    public Label getLabelById(long id);
-
-    @Transactional
-    public Label updateLabel(long id, LabelDTO dto);
+    Label getLabelById(long id);
 
     @Transactional
-    public void deleteLabel(long id);
+    Label updateLabel(long id, LabelDTO dto);
+
+    @Transactional
+    void deleteLabel(long id);
 }

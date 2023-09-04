@@ -14,15 +14,15 @@ import java.util.List;
 public interface TaskService {
 
     @Transactional
-    public Task createTask(TaskDTO dto, UserDetails authDetails);
+    Task createTask(TaskDTO dto, UserDetails authDetails);
 
-    public List<Task> getTasksByParams(Predicate predicate);
+    List<Task> getTasksByParams(Predicate predicate);
 
-    public Task getTaskById(long id);
-
-    @Transactional
-    public Task updateTask(long id, TaskDTO dto, UserDetails authDetails);
+    Task getTaskById(long id);
 
     @Transactional
-    public void deleteTask(long id, UserDetails authDetails);
+    Task updateTask(long id, TaskDTO dto, UserDetails authDetails);
+
+    @Transactional
+    void deleteTask(long id, UserDetails authDetails);
 }

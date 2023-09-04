@@ -55,7 +55,8 @@ public class TaskController {
     @Operation(summary = "Get task by parameters")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The task is found",
-                    content = {@Content(mediaType = "application/jsom", schema = @Schema(implementation = Task.class))}),
+                    content = {@Content(mediaType = "application/jsom",
+                            schema = @Schema(implementation = Task.class))}),
             @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
     @GetMapping
     public List<TaskDTO> findTasksByParams(@QuerydslPredicate(root = Task.class) Predicate predicate) {
@@ -68,7 +69,8 @@ public class TaskController {
     @Operation(summary = "Get task by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The task is found",
-                    content = {@Content(mediaType = "application/jsom", schema = @Schema(implementation = Task.class))}),
+                    content = {@Content(mediaType = "application/jsom",
+                            schema = @Schema(implementation = Task.class))}),
             @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
     @GetMapping(path = "/{id}")
     public TaskDTO findTaskById(@PathVariable(name = "id") long id) {
@@ -79,7 +81,8 @@ public class TaskController {
     @Operation(summary = "Update the task by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The task is successfully updated",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Task.class))}),
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Task.class))}),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
     @PutMapping(path = "/{id}")
     public TaskDTO updateTask(@RequestBody @Valid TaskDTO dto,
