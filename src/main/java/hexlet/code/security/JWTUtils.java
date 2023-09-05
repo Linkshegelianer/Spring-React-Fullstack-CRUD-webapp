@@ -1,16 +1,15 @@
 package hexlet.code.security;
 
 import hexlet.code.domain.model.User;
-import io.jsonwebtoken.*;
-//import io.jsonwebtoken.io.Decoders;
-//import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.Map;
 
 import static io.jsonwebtoken.impl.TextCodec.BASE64;
 
@@ -46,16 +45,5 @@ public class JWTUtils {
         claims.setIssuer(JWT_ISSUER);
         claims.setSubject(JWT_SUBJECT);
         return claims;
-
-
-
-//        return Jwts.parserBuilder()
-//                .requireSubject(JWT_SUBJECT)
-//                .requireIssuer(JWT_ISSUER)
-//                .setAllowedClockSkewSeconds(120)
-//                .setSigningKey(key)
-//                .build()
-//                .parseClaimsJws(token)
-//                .getBody();
     }
 }
