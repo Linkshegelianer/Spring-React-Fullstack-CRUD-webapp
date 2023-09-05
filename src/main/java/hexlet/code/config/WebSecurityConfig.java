@@ -46,7 +46,7 @@ public class WebSecurityConfig {
                 .logout().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.authorizeRequests()
+        http.authorizeHttpRequests()
                 .requestMatchers(publicPaths).permitAll()
                 .anyRequest().authenticated();
 
