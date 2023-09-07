@@ -41,9 +41,12 @@ public class JWTUtils {
     }
 
     public Claims getClaims(String token) throws JwtException {
-        final Claims claims = Jwts.claims();
-        claims.setIssuer(JWT_ISSUER);
-        claims.setSubject(JWT_SUBJECT);
-        return claims;
+        return Jwts.parser()
+                .requireSubject(JWT_SUBJECT)
+                .requireIssuer(JWT_ISSUER)
+                .setAllowedClockSkewSeconds(120)
+                .setSigningKey(key)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
