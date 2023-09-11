@@ -34,11 +34,11 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "Create new user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User registered"),
-            @ApiResponse(responseCode = "404", description = "User with that id not found"),
-            @ApiResponse(responseCode = "422", description = "User data is incorrect"),
-    })
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "User registered"),
+//            @ApiResponse(responseCode = "404", description = "User with that id not found"),
+//            @ApiResponse(responseCode = "422", description = "User data is incorrect"),
+//    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDTO createUser(@RequestBody @Valid UserRequestDTO dto,
@@ -48,9 +48,9 @@ public class UserController {
     }
 
     @Operation(summary = "Get list of all users")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "List of all users"),
-    })
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "List of all users"),
+//    })
     @GetMapping
     public List<UserResponseDTO> findAllUsers() {
         List<User> existedUsers = userService.getAllUsers();
@@ -60,10 +60,10 @@ public class UserController {
     }
 
     @Operation(summary = "Get specific user by his id")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "User found"),
-        @ApiResponse(responseCode = "404", description = "User with that id not found")
-    })
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "User found"),
+//        @ApiResponse(responseCode = "404", description = "User with that id not found")
+//    })
     @GetMapping(path = "/{id}")
     public UserResponseDTO findUserById(@PathVariable(name = "id") long id) {
         User existedUser = userService.getUserById(id);
@@ -71,13 +71,13 @@ public class UserController {
     }
 
     @Operation(summary = "Update user by his id")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "User updated"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized request"),
-        @ApiResponse(responseCode = "403", description = "Access denied for this user"),
-        @ApiResponse(responseCode = "404", description = "User with that id not found"),
-        @ApiResponse(responseCode = "422", description = "User data is incorrect")
-    })
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "User updated"),
+//        @ApiResponse(responseCode = "401", description = "Unauthorized request"),
+//        @ApiResponse(responseCode = "403", description = "Access denied for this user"),
+//        @ApiResponse(responseCode = "404", description = "User with that id not found"),
+//        @ApiResponse(responseCode = "422", description = "User data is incorrect")
+//    })
     @PutMapping(path = "/{id}")
     public UserResponseDTO updateUser(@RequestBody @Valid UserRequestDTO dto,
                                       @PathVariable(name = "id") long id,
@@ -87,12 +87,12 @@ public class UserController {
     }
 
     @Operation(summary = "Delete user by his id")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "User deleted"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized request"),
-        @ApiResponse(responseCode = "403", description = "Access denied for this user"),
-        @ApiResponse(responseCode = "404", description = "User with that id not found")
-    })
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "User deleted"),
+//        @ApiResponse(responseCode = "401", description = "Unauthorized request"),
+//        @ApiResponse(responseCode = "403", description = "Access denied for this user"),
+//        @ApiResponse(responseCode = "404", description = "User with that id not found")
+//    })
     @DeleteMapping(path = "/{id}")
     public void deleteUser(@PathVariable(name = "id") long id,
                            @AuthenticationPrincipal UserDetails authDetails) {
