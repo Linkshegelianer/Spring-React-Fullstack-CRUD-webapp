@@ -159,7 +159,7 @@ class UserControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + jwtToken)
                 .content(utils.toJson(dto))
                 .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()) // here
+            .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", is(userId), Long.class))
             .andExpect(jsonPath("$.lastName", is(TEST_UPDATED_LAST_NAME)));
@@ -191,7 +191,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testUpdateOrDeleteUserByNotTheOwner() throws Exception { // ok
+    void testUpdateOrDeleteUserByNotTheOwner() throws Exception {
         registerUser(TEST_EMAIL_1)
             .andExpect(status().isCreated());
 

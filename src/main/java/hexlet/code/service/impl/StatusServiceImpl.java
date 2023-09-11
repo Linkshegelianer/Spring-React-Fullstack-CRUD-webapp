@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -17,7 +17,6 @@ import java.util.List;
 public class StatusServiceImpl implements StatusService {
 
     private final StatusRepository statusRepository;
-//    private final StatusModelMapper statusMapper;
 
     @Transactional
     public Status createStatus(StatusDTO dto) {

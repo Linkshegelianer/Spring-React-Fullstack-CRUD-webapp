@@ -1,29 +1,26 @@
 plugins {
 	id 'application'
 	id 'checkstyle'
-	id 'jacoco'
+	id 'org.springframework.boot' version '3.0.6'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id 'org.liquibase.gradle' version '2.2.0'
+	id 'com.github.johnrengelman.processes' version '0.5.0'
+	id 'org.springdoc.openapi-gradle-plugin' version '1.6.0'
 	id 'org.siouan.frontend-jdk11' version '6.0.0'
-	id 'org.liquibase.gradle' version '2.0.4'
-	id 'org.springframework.boot' version '2.7.10'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'jacoco'
 }
 
 group = 'hexlet.code'
-version = '1.0-SNAPSHOT'
-
-compileJava {
-	options.release = 17
-	options.encoding = 'UTF-8'
-}
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 20
 
 application {
 	mainClass = 'hexlet.code.AppApplication'
-	applicationDefaultJvmArgs = ['-Dfile.encoding=UTF-8']
 }
 
-jacocoTestReport {
-	reports {
-		xml.required = true
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
 	}
 }
 
@@ -32,72 +29,83 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	implementation 'org.liquibase:liquibase-core'
-	implementation 'com.querydsl:querydsl-core:5.0.0'
-	implementation 'com.querydsl:querydsl-jpa:5.0.0'
-	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
-	implementation 'com.rollbar:rollbar-spring-boot-webmvc:1.10.0'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly'io.jsonwebtoken:jjwt-jackson:0.11.5'
-	runtimeOnly 'com.h2database:h2:2.1.214'
-	runtimeOnly 'org.postgresql:postgresql:42.5.4'
-
-	liquibaseRuntime 'org.liquibase:liquibase-core:4.16.1'
-	liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:3.0.2'
-	liquibaseRuntime 'info.picocli:picocli:4.6.1'
-	liquibaseRuntime 'com.h2database:h2:2.1.214'
-	liquibaseRuntime 'org.postgresql:postgresql:42.5.4'
-	liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:4.16.1'
-	liquibaseRuntime 'org.springframework.boot:spring-boot-starter-data-jpa'
-	liquibaseRuntime("ch.qos.logback:logback-core:1.4.6")
-	liquibaseRuntime("ch.qos.logback:logback-classic:1.4.6")
-	liquibaseRuntime sourceSets.main.output
-
-	annotationProcessor 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final'
-	annotationProcessor 'javax.annotation:javax.annotation-api:1.3.2'
-	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jpa'
-	annotationProcessor 'org.projectlombok:lombok'
+	implementation(
+			'org.springframework.boot:spring-boot-starter-data-jpa',
+			'org.springframework.boot:spring-boot-starter-web',
+			'org.springframework.boot:spring-boot-starter-validation',
+			'org.springframework.boot:spring-boot-starter-security',
+			'org.liquibase:liquibase-core',
+			'org.springdoc:springdoc-openapi-ui:1.7.0',
+			'io.jsonwebtoken:jjwt:0.9.1',
+			'org.springdoc:springdoc-openapi-ui:1.7.0',
+			'com.rollbar:rollbar-spring-boot3-webmvc:1.10.0',
+			'com.querydsl:querydsl-jpa:5.0.0:jakarta',
+			'io.jsonwebtoken:jjwt-api:0.11.5',
+			'org.springframework.boot:spring-boot-starter-test'
+	)
 
 	compileOnly 'org.projectlombok:lombok'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
+	runtimeOnly (
+			'com.h2database:h2',
+			'org.postgresql:postgresql:42.6.0',
+			'io.jsonwebtoken:jjwt-impl:0.11.5',
+			'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	)
 
-ext {
-	set('snakeyaml.version','1.32')
-}
+	liquibaseRuntime(
+			sourceSets.main.output,
+			'org.liquibase:liquibase-core',
+			'info.picocli:picocli:4.7.1',
+			'org.liquibase.ext:liquibase-hibernate6:4.21.1',
+			'org.springframework.boot:spring-boot-starter-data-jpa',
+			'com.h2database:h2',
+			'org.postgresql:postgresql:42.5.4',
+			'org.liquibase:liquibase-groovy-dsl:3.0.2',
+			'org.liquibase.ext:liquibase-hibernate5:4.16.1',
+			"ch.qos.logback:logback-core:1.4.6",
+			"ch.qos.logback:logback-classic:1.4.6"
+	)
 
-diffChangeLog {
-	dependsOn compileJava
-}
-
-liquibase {
-	activities {
-		main {
-			changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
-			url 'jdbc:h2:./database73'
-			username 'sa'
-			password 'sa'
-			referenceUrl 'hibernate:spring:hexlet.code.domain.model' +
-					     '?dialect=org.hibernate.dialect.H2Dialect' +
-					     '&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy'
-//					     '&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy'
-		}
-	}
+	annotationProcessor(
+			'org.projectlombok:lombok',
+			'com.querydsl:querydsl-apt:5.0.0:jakarta',
+			'jakarta.persistence:jakarta.persistence-api:3.1.0',
+			'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final',
+			'javax.annotation:javax.annotation-api:1.3.2'
+	)
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
-// Frontend (static) build. Runs if no diffs.
-// *****************************************************************************
+compileJava {
+	options.release = 20
+	options.encoding = 'UTF-8'
+}
+
+diffChangelog {
+	dependsOn compileJava
+}
+
+liquibase {
+	activities {
+		main {
+			changelogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+			url 'jdbc:h2:./database73'
+		}
+	}
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+	}
+}
+
 frontend {
 	nodeVersion = '16.13.1'
 	installScript = 'install'
@@ -126,7 +134,3 @@ installFrontend {
 }
 
 processResources.dependsOn assembleFrontend
-// *****************************************************************************
-
-task stage(dependsOn: ['clean', 'installDist'])
-installDist.mustRunAfter clean

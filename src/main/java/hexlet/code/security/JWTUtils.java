@@ -1,18 +1,17 @@
 package hexlet.code.security;
 
 import hexlet.code.domain.model.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.time.ZonedDateTime;
 import java.util.Date;
+
+import static io.jsonwebtoken.impl.TextCodec.BASE64;
 
 
 @Component
@@ -20,10 +19,10 @@ public class JWTUtils {
 
     private static final String JWT_SUBJECT = "user-details";
     private static final String JWT_ISSUER = "spring-app";
-    private final SecretKey key;
+    private final String key;
 
-    public JWTUtils(@Value("${jwt.secret}") String base64EncodedString) {
-        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(base64EncodedString));
+    public JWTUtils(@Value("${jwt.secret}") String secret) {
+        this.key = BASE64.encode(secret);
     }
 
     public String generateToken(User user) {
@@ -37,17 +36,16 @@ public class JWTUtils {
                 .claim("email", user.getEmail())
                 .setIssuedAt(creationDate)
                 .setExpiration(expirationDate)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
     }
 
     public Claims getClaims(String token) throws JwtException {
-        return Jwts.parserBuilder()
+        return Jwts.parser()
                 .requireSubject(JWT_SUBJECT)
                 .requireIssuer(JWT_ISSUER)
                 .setAllowedClockSkewSeconds(120)
                 .setSigningKey(key)
-                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
