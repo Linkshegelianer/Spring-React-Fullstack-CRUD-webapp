@@ -6,10 +6,10 @@ import hexlet.code.domain.dto.TaskDTO;
 import hexlet.code.domain.model.Task;
 import hexlet.code.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
-//import io.swagger.v3.oas.annotations.media.Content;
-//import io.swagger.v3.oas.annotations.media.Schema;
-//import io.swagger.v3.oas.annotations.responses.ApiResponse;
-//import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
@@ -39,11 +39,11 @@ public class TaskController {
     private final DataMapper dataMapper;
 
     @Operation(summary = "Create new task")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "201", description = "Task has been created",
-//                    content = {@Content(mediaType = "application/json",
-//                            schema = @Schema(implementation = Task.class))}),
-//            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Task has been created",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Task.class))}),
+    @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TaskDTO createTask(@RequestBody @Valid TaskDTO dto,
@@ -53,11 +53,11 @@ public class TaskController {
     }
 
     @Operation(summary = "Get task by parameters")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "The task is found",
-//                    content = {@Content(mediaType = "application/jsom",
-//                            schema = @Schema(implementation = Task.class))}),
-//            @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "The task is found",
+            content = {@Content(mediaType = "application/jsom",
+                    schema = @Schema(implementation = Task.class))}),
+    @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
     @GetMapping
     public List<TaskDTO> findTasksByParams(@QuerydslPredicate(root = Task.class) Predicate predicate) {
         List<Task> existedTasks = taskService.getTasksByParams(predicate);
@@ -67,11 +67,11 @@ public class TaskController {
     }
 
     @Operation(summary = "Get task by id")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "The task is found",
-//                    content = {@Content(mediaType = "application/jsom",
-//                            schema = @Schema(implementation = Task.class))}),
-//            @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "The task is found",
+            content = {@Content(mediaType = "application/jsom",
+                    schema = @Schema(implementation = Task.class))}),
+    @ApiResponse(responseCode = "404", description = "No such task found", content = @Content)})
     @GetMapping(path = "/{id}")
     public TaskDTO findTaskById(@PathVariable(name = "id") long id) {
         Task existedTask = taskService.getTaskById(id);
@@ -79,11 +79,11 @@ public class TaskController {
     }
 
     @Operation(summary = "Update the task by id")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "The task is successfully updated",
-//                    content = {@Content(mediaType = "application/json",
-//                            schema = @Schema(implementation = Task.class))}),
-//            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "The task is successfully updated",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Task.class))}),
+    @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
     @PutMapping(path = "/{id}")
     public TaskDTO updateTask(@RequestBody @Valid TaskDTO dto,
                                       @PathVariable(name = "id") long id,
@@ -93,9 +93,9 @@ public class TaskController {
     }
 
     @Operation(summary = "Delete the task by id")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "The task has been successfully deleted"),
-//            @ApiResponse(responseCode = "404", description = "The task is not found", content = @Content)})
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "The task has been successfully deleted"),
+    @ApiResponse(responseCode = "404", description = "The task is not found", content = @Content)})
     @DeleteMapping(path = "/{id}")
     public void deleteTask(@PathVariable(name = "id") long id,
                            @AuthenticationPrincipal UserDetails authDetails) {
