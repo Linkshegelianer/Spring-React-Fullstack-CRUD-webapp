@@ -56,10 +56,10 @@ public class StatusController {
 
     @Operation(summary = "Get task status by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The task status is found",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Status.class))}),
-            @ApiResponse(responseCode = "404", description = "No such task status found", content = @Content)})
+        @ApiResponse(responseCode = "200", description = "The task status is found",
+                content = {@Content(mediaType = "application/json",
+                        schema = @Schema(implementation = Status.class))}),
+        @ApiResponse(responseCode = "404", description = "No such task status found", content = @Content)})
     @GetMapping(path = "/{id}")
     public StatusDTO findStatusById(@PathVariable(name = "id") long id) {
         Status existedStatus = statusService.getStatusById(id);
@@ -68,10 +68,10 @@ public class StatusController {
 
     @Operation(summary = "Update the task status by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The task status has been successfully updated",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Status.class))}),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
+        @ApiResponse(responseCode = "200", description = "The task status has been successfully updated",
+                content = {@Content(mediaType = "application/json",
+                        schema = @Schema(implementation = Status.class))}),
+        @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
     @PutMapping(path = "/{id}")
     public StatusDTO updateStatus(@RequestBody @Valid StatusDTO dto,
                                           @PathVariable(name = "id") long id) {
@@ -81,8 +81,8 @@ public class StatusController {
 
     @Operation(summary = "Delete the task status by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Task status has been deleted"),
-            @ApiResponse(responseCode = "404", description = "No such task status found")})
+        @ApiResponse(responseCode = "201", description = "Task status has been deleted"),
+        @ApiResponse(responseCode = "404", description = "No such task status found")})
     @DeleteMapping(path = "/{id}")
     public void deleteStatus(@PathVariable(name = "id") long id) {
         statusService.deleteStatus(id);
