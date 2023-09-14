@@ -35,9 +35,9 @@ public class UserController {
 
     @Operation(summary = "Create new user")
     @ApiResponses(value = {
-    @ApiResponse(responseCode = "201", description = "User registered"),
-    @ApiResponse(responseCode = "404", description = "User with that id not found"),
-    @ApiResponse(responseCode = "422", description = "User data is incorrect"),
+            @ApiResponse(responseCode = "201", description = "User registered"),
+            @ApiResponse(responseCode = "404", description = "User with that id not found"),
+            @ApiResponse(responseCode = "422", description = "User data is incorrect"),
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
