@@ -107,10 +107,10 @@ class LabelControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        List<Label> labels = fromJson(response.getContentAsString(), new TypeReference<List<Label>>() {});
+        List<Label> labels = fromJson(response.getContentAsString(), new TypeReference<List<Label>>() { });
         List<Label> expected = labelRepository.findAll();
 
-        assertEquals(labels.size(),expected.size());
+        assertEquals(labels.size(), expected.size());
     }
 
     @Test
@@ -183,7 +183,7 @@ class LabelControllerTest {
     private Long extractLabelIdFromResponse(ResultActions resultActions) throws Exception {
         MvcResult result = resultActions.andReturn();
         String responseContent = result.getResponse().getContentAsString();
-        TypeReference<Label> typeReference = new TypeReference<Label>() {};
+        TypeReference<Label> typeReference = new TypeReference<Label>() { };
         Label label = fromJson(responseContent, typeReference);
         return label.getId();
     }
