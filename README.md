@@ -4,7 +4,7 @@ This repository contains Spring Boot CRUD Web-application for managing task from
 
 This is an educational project aimed at the practice of working with Spring Boot, Bootstrap, Thymeleaf, Spring Data JPA, Hibernate, PostgreSQL, JUnit and GitHub Actions.
 
-**See how it works [here]().**
+**See how it works [here](https://task-manager-w37d.onrender.com).**
 
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/Linkshegelianer/java-project-73/workflows/hexlet-check/badge.svg)](https://github.com/Linkshegelianer/java-project-73/actions)
