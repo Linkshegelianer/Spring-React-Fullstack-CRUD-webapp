@@ -1,7 +1,7 @@
 package hexlet.code.service.impl;
 
-import hexlet.code.domain.dto.StatusDTO;
-import hexlet.code.domain.model.Status;
+import hexlet.code.dto.StatusDTO;
+import hexlet.code.domain.Status;
 import hexlet.code.repository.StatusRepository;
 import hexlet.code.service.StatusService;
 import lombok.AllArgsConstructor;

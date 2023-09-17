@@ -1,6 +1,6 @@
 package hexlet.code.controller;
 
-import hexlet.code.domain.dto.LogInDTO;
+import hexlet.code.dto.LogInDTO;
 import hexlet.code.service.impl.LogInServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

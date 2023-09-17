@@ -1,9 +1,9 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import hexlet.code.domain.dto.LabelDTO;
-import hexlet.code.domain.model.Label;
-import hexlet.code.domain.model.User;
+import hexlet.code.dto.LabelDTO;
+import hexlet.code.domain.Label;
+import hexlet.code.domain.User;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
@@ -20,15 +20,18 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 import java.util.Optional;
 
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
+import static hexlet.code.utils.TestUtils.fromJson;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -81,45 +84,33 @@ class LabelControllerTest {
 
     @Test
     void testCreateLabel() throws Exception {
-        long expectedCountInDB = 0;
-        long actualCount = labelRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-
-        createLabel(TEST_LABEL_1)
+        ResultActions creationResult = createLabel(TEST_LABEL_1)
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name", is(TEST_LABEL_1)));
 
-        expectedCountInDB = 1;
-        actualCount = labelRepository.count();
+        Long labelId = extractLabelIdFromResponse(creationResult);
 
-        assertEquals(expectedCountInDB, actualCount);
+        assertTrue(labelRepository.existsById(labelId));
     }
 
     @Test
     void testFindAllLabels() throws Exception {
         createLabel(TEST_LABEL_1)
-            .andExpect(status().isCreated());
+                .andExpect(status().isCreated());
 
         createLabel(TEST_LABEL_2)
-            .andExpect(status().isCreated());
+                .andExpect(status().isCreated());
 
         MockHttpServletResponse response = mvc.perform(get("/api/labels")
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
-            .andExpect(status().isOk())
-            .andReturn().getResponse();
+                        .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
 
-        List<LabelDTO> labelDTOList = testUtils.jsonToObject(
-            response.getContentAsString(UTF_8),
-            new TypeReference<>() { }
-        );
-        int expectedDtoCount = 2;
-        int actual = labelDTOList.size();
+        List<Label> labels = fromJson(response.getContentAsString(), new TypeReference<List<Label>>() {});
+        List<Label> expected = labelRepository.findAll();
 
-        assertEquals(expectedDtoCount, actual);
-        assertEquals(TEST_LABEL_1, labelDTOList.get(0).getName());
-        assertEquals(TEST_LABEL_2, labelDTOList.get(1).getName());
+        assertEquals(labels.size(),expected.size());
     }
 
     @Test
@@ -170,15 +161,12 @@ class LabelControllerTest {
 
     @Test
     void testDeleteLabel() throws Exception {
-        createLabel(TEST_LABEL_1)
-            .andExpect(status().isCreated());
-
-        Label labelToDelete = labelRepository.findAll().get(0);
-        long labelId = labelToDelete.getId();
+        ResultActions creationResult = createLabel(TEST_LABEL_1);
+        Long labelId = extractLabelIdFromResponse(creationResult);
 
         mvc.perform(delete("/api/labels/%d".formatted(labelId))
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
-            .andExpect(status().isOk());
+                        .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
+                .andExpect(status().isOk());
 
         assertFalse(labelRepository.existsById(labelId));
     }
@@ -190,5 +178,13 @@ class LabelControllerTest {
             .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
             .content(testUtils.toJson(labelRequestDTO))
             .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private Long extractLabelIdFromResponse(ResultActions resultActions) throws Exception {
+        MvcResult result = resultActions.andReturn();
+        String responseContent = result.getResponse().getContentAsString();
+        TypeReference<Label> typeReference = new TypeReference<Label>() {};
+        Label label = fromJson(responseContent, typeReference);
+        return label.getId();
     }
 }

@@ -1,7 +1,7 @@
 package hexlet.code.service.impl;
 
-import hexlet.code.domain.dto.LogInDTO;
-import hexlet.code.domain.model.User;
+import hexlet.code.dto.LogInDTO;
+import hexlet.code.domain.User;
 import hexlet.code.exception.SignInException;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.security.JWTUtils;

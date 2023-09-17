@@ -1,13 +1,13 @@
 package hexlet.code.utils;
 
-import hexlet.code.domain.dto.LabelDTO;
-import hexlet.code.domain.dto.StatusDTO;
-import hexlet.code.domain.dto.TaskDTO;
-import hexlet.code.domain.dto.UserResponseDTO;
-import hexlet.code.domain.model.Label;
-import hexlet.code.domain.model.Status;
-import hexlet.code.domain.model.Task;
-import hexlet.code.domain.model.User;
+import hexlet.code.dto.LabelDTO;
+import hexlet.code.dto.StatusDTO;
+import hexlet.code.dto.TaskDTO;
+import hexlet.code.dto.UserResponseDTO;
+import hexlet.code.domain.Label;
+import hexlet.code.domain.Status;
+import hexlet.code.domain.Task;
+import hexlet.code.domain.User;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;

@@ -1,10 +1,10 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import hexlet.code.domain.dto.LogInDTO;
-import hexlet.code.domain.dto.UserRequestDTO;
-import hexlet.code.domain.dto.UserResponseDTO;
-import hexlet.code.domain.model.User;
+import hexlet.code.dto.LogInDTO;
+import hexlet.code.dto.UserRequestDTO;
+import hexlet.code.dto.UserResponseDTO;
+import hexlet.code.domain.User;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.StatusRepository;
 import hexlet.code.repository.UserRepository;

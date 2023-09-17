@@ -3,8 +3,8 @@ package hexlet.code.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.domain.model.Status;
-import hexlet.code.domain.model.User;
+import hexlet.code.domain.Status;
+import hexlet.code.domain.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,5 +43,9 @@ public class TestUtils {
         Status status = new Status();
         status.setName(name);
         return status;
+    }
+
+    public static <T> T fromJson(final String json, final TypeReference<T> to) throws JsonProcessingException {
+        return JSON_MAPPER.readValue(json, to);
     }
 }

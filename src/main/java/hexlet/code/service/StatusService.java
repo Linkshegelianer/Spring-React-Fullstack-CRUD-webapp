@@ -1,7 +1,7 @@
 package hexlet.code.service;
 
-import hexlet.code.domain.dto.StatusDTO;
-import hexlet.code.domain.model.Status;
+import hexlet.code.dto.StatusDTO;
+import hexlet.code.domain.Status;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

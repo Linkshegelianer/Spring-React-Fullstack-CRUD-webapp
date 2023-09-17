@@ -1,6 +1,6 @@
 package hexlet.code.service;
 
-import hexlet.code.domain.dto.LogInDTO;
+import hexlet.code.dto.LogInDTO;
 
 public interface LogInService {
 

@@ -1,6 +1,6 @@
 package hexlet.code.utils;
 
-import hexlet.code.domain.model.Task;
+import hexlet.code.domain.Task;
 import hexlet.code.service.LabelService;
 import hexlet.code.service.StatusService;
 import hexlet.code.service.UserService;

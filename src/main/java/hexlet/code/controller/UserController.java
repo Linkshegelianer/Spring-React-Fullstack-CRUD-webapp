@@ -1,14 +1,15 @@
 package hexlet.code.controller;
 
-import hexlet.code.domain.dto.UserRequestDTO;
-import hexlet.code.domain.dto.UserResponseDTO;
-import hexlet.code.domain.model.User;
+import hexlet.code.dto.UserRequestDTO;
+import hexlet.code.dto.UserResponseDTO;
+import hexlet.code.domain.User;
 import hexlet.code.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
@@ -32,6 +33,8 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
+
+    private static final String OWNER = "@userRepository.findUserById(#id).get().getEmail() == authentication.getName()";
 
     @Operation(summary = "Create new user")
     @ApiResponses(value = {
@@ -86,6 +89,7 @@ public class UserController {
         return toUserResponseDTO(updatedUser);
     }
 
+    @PreAuthorize(OWNER)
     @Operation(summary = "Delete user by his id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User deleted"),

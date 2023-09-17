@@ -1,7 +1,7 @@
 package hexlet.code.service;
 
-import hexlet.code.domain.dto.LabelDTO;
-import hexlet.code.domain.model.Label;
+import hexlet.code.dto.LabelDTO;
+import hexlet.code.domain.Label;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 

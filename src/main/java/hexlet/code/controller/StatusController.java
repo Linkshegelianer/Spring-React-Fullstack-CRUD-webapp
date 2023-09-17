@@ -1,7 +1,7 @@
 package hexlet.code.controller;
 
-import hexlet.code.domain.dto.StatusDTO;
-import hexlet.code.domain.model.Status;
+import hexlet.code.dto.StatusDTO;
+import hexlet.code.domain.Status;
 import hexlet.code.utils.DataMapper;
 import hexlet.code.service.StatusService;
 import io.swagger.v3.oas.annotations.Operation;

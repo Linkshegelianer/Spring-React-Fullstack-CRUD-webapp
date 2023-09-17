@@ -1,6 +1,6 @@
 package hexlet.code.security;
 
-import hexlet.code.domain.model.User;
+import hexlet.code.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

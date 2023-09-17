@@ -1,7 +1,7 @@
 package hexlet.code.controller;
 
-import hexlet.code.domain.dto.LabelDTO;
-import hexlet.code.domain.model.Label;
+import hexlet.code.dto.LabelDTO;
+import hexlet.code.domain.Label;
 import hexlet.code.utils.DataMapper;
 import hexlet.code.service.LabelService;
 import io.swagger.v3.oas.annotations.Operation;

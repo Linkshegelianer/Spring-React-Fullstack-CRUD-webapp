@@ -1,6 +1,6 @@
 package hexlet.code.security;
 
-import hexlet.code.domain.model.User;
+import hexlet.code.domain.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

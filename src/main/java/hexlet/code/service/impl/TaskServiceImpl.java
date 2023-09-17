@@ -2,8 +2,8 @@ package hexlet.code.service.impl;
 
 import com.querydsl.core.types.Predicate;
 import hexlet.code.utils.TasksFactory;
-import hexlet.code.domain.dto.TaskDTO;
-import hexlet.code.domain.model.Task;
+import hexlet.code.dto.TaskDTO;
+import hexlet.code.domain.Task;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.service.TaskService;
 import lombok.AllArgsConstructor;

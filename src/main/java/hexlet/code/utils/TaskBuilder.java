@@ -1,9 +1,9 @@
 package hexlet.code.utils;
 
-import hexlet.code.domain.model.Label;
-import hexlet.code.domain.model.Status;
-import hexlet.code.domain.model.Task;
-import hexlet.code.domain.model.User;
+import hexlet.code.domain.Label;
+import hexlet.code.domain.Status;
+import hexlet.code.domain.Task;
+import hexlet.code.domain.User;
 import hexlet.code.service.LabelService;
 import hexlet.code.service.StatusService;
 import hexlet.code.service.UserService;

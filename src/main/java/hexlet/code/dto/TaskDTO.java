@@ -1,4 +1,4 @@
-package hexlet.code.domain.dto;
+package hexlet.code.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

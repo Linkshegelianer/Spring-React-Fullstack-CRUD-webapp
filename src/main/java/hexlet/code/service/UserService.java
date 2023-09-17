@@ -1,7 +1,7 @@
 package hexlet.code.service;
 
-import hexlet.code.domain.dto.UserRequestDTO;
-import hexlet.code.domain.model.User;
+import hexlet.code.dto.UserRequestDTO;
+import hexlet.code.domain.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

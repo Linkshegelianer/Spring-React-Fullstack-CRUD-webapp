@@ -1,7 +1,7 @@
 package hexlet.code.service.impl;
 
-import hexlet.code.domain.dto.UserRequestDTO;
-import hexlet.code.domain.model.User;
+import hexlet.code.dto.UserRequestDTO;
+import hexlet.code.domain.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;

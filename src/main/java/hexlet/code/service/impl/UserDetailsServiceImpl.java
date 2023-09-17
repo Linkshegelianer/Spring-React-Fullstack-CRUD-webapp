@@ -1,6 +1,6 @@
 package hexlet.code.service.impl;
 
-import hexlet.code.domain.model.User;
+import hexlet.code.domain.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.security.AppUserDetails;
 import lombok.AllArgsConstructor;
