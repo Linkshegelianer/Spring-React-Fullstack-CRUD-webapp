@@ -54,7 +54,7 @@ const TaskFilter = (props) => {
         }
 
         if (formData.labelId) {
-          params.labels = formData.labelId;
+          params.labelsId = formData.labelId;
         }
 
         const { data: response } = await axios

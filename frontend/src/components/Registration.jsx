@@ -53,6 +53,8 @@ const Registration = () => {
             .reduce((acc, err) => ({ ...acc, [err.field]: err.defaultMessage }), {});
           setErrors(errors);
           notify.addError('registrationFail');
+        } else if (e.response?.status === 422) {
+          notify.addError('registrationFail');
         } else {
           handleError(e, notify, history);
         }
