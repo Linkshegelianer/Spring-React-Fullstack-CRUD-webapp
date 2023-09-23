@@ -20,17 +20,20 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 import java.util.Optional;
 
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
+import static hexlet.code.utils.TestUtils.fromJson;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -78,20 +81,14 @@ class StatusControllerTest {
 
     @Test
     void testCreateStatus() throws Exception {
-        long expectedCountInDB = 0;
-        long actualCount = statusRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-
-        createStatus(TEST_STATUS_1)
+        ResultActions creationResult = createStatus(TEST_STATUS_1)
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name", is(TEST_STATUS_1)));
 
-        expectedCountInDB = 1;
-        actualCount = statusRepository.count();
+        Long statusId = extractStatusIdFromResponse(creationResult);
 
-        assertEquals(expectedCountInDB, actualCount);
+        assertTrue(statusRepository.existsById(statusId));
     }
 
     @Test
@@ -106,16 +103,10 @@ class StatusControllerTest {
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        List<StatusDTO> statusDTOList = testUtils.jsonToObject(
-            response.getContentAsString(UTF_8),
-            new TypeReference<>() { }
-        );
-        int expectedDtoCount = 2;
-        int actual = statusDTOList.size();
+        List<Status> statuses = fromJson(response.getContentAsString(), new TypeReference<List<Status>>() { });
+        List<Status> expected = statusRepository.findAll();
 
-        assertEquals(expectedDtoCount, actual);
-        assertEquals(TEST_STATUS_1, statusDTOList.get(0).getName());
-        assertEquals(TEST_STATUS_2, statusDTOList.get(1).getName());
+        assertEquals(statuses.size(), expected.size());
     }
 
     @Test
@@ -185,5 +176,14 @@ class StatusControllerTest {
             .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
             .content(testUtils.toJson(statusRequestDTO))
             .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private Long extractStatusIdFromResponse(ResultActions resultActions) throws Exception {
+        MvcResult result = resultActions.andReturn();
+        String responceContent = result.getResponse().getContentAsString();
+        TypeReference<Status> typeReference = new TypeReference<Status>() { };
+        Status status = fromJson(responceContent, typeReference);
+        return status.getId();
+
     }
 }

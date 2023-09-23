@@ -1,7 +1,6 @@
 package hexlet.code.controller;
 
 import com.querydsl.core.types.Predicate;
-import hexlet.code.repository.TaskRepository;
 import hexlet.code.utils.DataMapper;
 import hexlet.code.dto.TaskDTO;
 import hexlet.code.domain.Task;

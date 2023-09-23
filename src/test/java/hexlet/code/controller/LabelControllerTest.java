@@ -111,6 +111,9 @@ class LabelControllerTest {
         List<Label> expected = labelRepository.findAll();
 
         assertEquals(labels.size(), expected.size());
+
+        // Assertions.assertThat(labels).containsAll(expected);
+
     }
 
     @Test
