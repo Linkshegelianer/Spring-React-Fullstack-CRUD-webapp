@@ -1,6 +1,7 @@
 package hexlet.code.controller;
 
 import com.querydsl.core.types.Predicate;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.utils.DataMapper;
 import hexlet.code.dto.TaskDTO;
 import hexlet.code.domain.Task;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,6 +40,10 @@ public class TaskController {
     private final TaskService taskService;
 
     private final DataMapper dataMapper;
+
+    private static final String ONLY_AUTHOR_BY_ID = """
+            @taskRepository.findTaskById(#id).get().getAuthor().getEmail() == authentication.getName()
+        """;
 
     @Operation(summary = "Create new task")
     @ApiResponses(value = {
@@ -78,6 +85,7 @@ public class TaskController {
         return dataMapper.toTaskDTO(existedTask);
     }
 
+    @PreAuthorize(ONLY_AUTHOR_BY_ID)
     @Operation(summary = "Update the task by id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "The task is successfully updated",
@@ -88,10 +96,16 @@ public class TaskController {
     public TaskDTO updateTask(@RequestBody @Valid TaskDTO dto,
                                       @PathVariable(name = "id") long id,
                                       @AuthenticationPrincipal UserDetails authDetails) {
+
         Task updatedTask = taskService.updateTask(id, dto, authDetails);
+        String authenticatedEmail = authDetails.getUsername();
+        if (!authenticatedEmail.equalsIgnoreCase(updatedTask.getAuthor().getEmail())) {
+            throw new AccessDeniedException("Access denied");
+        }
         return dataMapper.toTaskDTO(updatedTask);
     }
 
+    @PreAuthorize(ONLY_AUTHOR_BY_ID)
     @Operation(summary = "Delete the task by id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "The task has been successfully deleted"),
@@ -99,6 +113,12 @@ public class TaskController {
     @DeleteMapping(path = "/{id}")
     public void deleteTask(@PathVariable(name = "id") long id,
                            @AuthenticationPrincipal UserDetails authDetails) {
+
+        String authenticatedEmail = authDetails.getUsername();
+        Task deletedTask = taskService.getTaskById(id);
+        if (!authenticatedEmail.equalsIgnoreCase(deletedTask.getAuthor().getEmail())) {
+            throw new AccessDeniedException("Access denied");
+        }
         taskService.deleteTask(id, authDetails);
     }
 }

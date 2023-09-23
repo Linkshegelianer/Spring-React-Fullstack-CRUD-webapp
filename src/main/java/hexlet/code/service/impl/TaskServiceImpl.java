@@ -8,7 +8,6 @@ import hexlet.code.repository.TaskRepository;
 import hexlet.code.service.TaskService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +52,6 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public Task updateTask(long id, TaskDTO dto, UserDetails authDetails) {
         Task existedTask = getTaskById(id);
-        validateOwnerByEmail(existedTask.getAuthor().getEmail(), authDetails);
 
         return tasksFactory.builder(existedTask)
                 .setName(dto.getName())
@@ -67,14 +65,6 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public void deleteTask(long id, UserDetails authDetails) {
         Task existedTask = getTaskById(id);
-        validateOwnerByEmail(existedTask.getAuthor().getEmail(), authDetails);
         taskRepository.delete(existedTask);
-    }
-
-    private void validateOwnerByEmail(String userEmail, UserDetails authDetails) {
-        String authenticatedEmail = authDetails.getUsername();
-        if (!authenticatedEmail.equalsIgnoreCase(userEmail)) {
-            throw new AccessDeniedException("Access denied");
-        }
     }
 }
