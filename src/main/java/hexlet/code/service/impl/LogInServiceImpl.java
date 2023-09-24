@@ -2,11 +2,11 @@ package hexlet.code.service.impl;
 
 import hexlet.code.dto.LogInDTO;
 import hexlet.code.domain.User;
-import hexlet.code.exception.SignInException;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.security.JWTUtils;
 import hexlet.code.service.LogInService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +22,11 @@ public class LogInServiceImpl implements LogInService {
     @Override
     public String authenticate(LogInDTO logInDTO) {
         User existedUser = userRepository.findUserByEmailIgnoreCase(logInDTO.getEmail())
-                .orElseThrow(() -> new SignInException("Sign in failed. User not found!"));
+                .orElseThrow(() -> new UsernameNotFoundException("Sign in failed. User not found!"));
 
         String passwordToCheck = logInDTO.getPassword();
         if (!bCryptPasswordEncoder.matches(passwordToCheck, existedUser.getPassword())) {
-            throw new SignInException("Sign in failed. Incorrect password!");
+            throw new UsernameNotFoundException("Sign in failed. Incorrect password!");
         }
         return jwtUtils.generateToken(existedUser);
     }
