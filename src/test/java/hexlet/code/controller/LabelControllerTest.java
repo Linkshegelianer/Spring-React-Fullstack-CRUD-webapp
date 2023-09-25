@@ -159,7 +159,7 @@ class LabelControllerTest {
         Optional<Label> actual = labelRepository.findLabelById(labelId);
 
         assertNotNull(actual.orElse(null));
-        assertEquals(TEST_UPDATED_LABEL, actual.get().getName());
+        assertEquals(TEST_UPDATED_LABEL, actual.map(Label::getName).orElse(null));
     }
 
     @Test

@@ -35,7 +35,7 @@ public class UserController {
     private final UserService userService;
 
     private static final String OWNER =
-            "@userRepository.findUserById(#id).get().getEmail() == authentication.getName()";
+            "@userRepository.findUserById(#id).orElse().getEmail() == authentication.getName()";
 
     @Operation(summary = "Create new user")
     @ApiResponses(value = {

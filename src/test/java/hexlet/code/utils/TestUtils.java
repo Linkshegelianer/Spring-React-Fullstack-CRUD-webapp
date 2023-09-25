@@ -2,6 +2,7 @@ package hexlet.code.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.domain.Status;
 import hexlet.code.domain.User;
@@ -10,13 +11,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestUtils {
 
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper().findAndRegisterModules();
-
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper().findAndRegisterModules()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private static final String DEFAULT_EMAIL = "default@mail.com";
     private static final String DEFAULT_FIRST_NAME = "First Name";
     private static final String DEFAULT_LAST_NAME = "Last Name";
     private static final String DEFAULT_PASSWORD = "password";
     public static final String TOKEN_PREFIX = "Bearer";
+
 
     public String toJson(Object object) throws JsonProcessingException {
         return JSON_MAPPER.writeValueAsString(object);

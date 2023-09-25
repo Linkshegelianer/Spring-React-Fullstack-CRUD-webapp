@@ -21,15 +21,18 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 import java.util.Optional;
 
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
+import static hexlet.code.utils.TestUtils.fromJson;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -94,21 +97,15 @@ class TaskControllerTest {
 
     @Test
     void testCreateTask() throws Exception {
-        long expectedCountInDB = 0;
-        long actualCount = taskRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-
-        createTask()
+        ResultActions creationResult = createTask()
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name", is(TEST_TASK)))
                 .andExpect(jsonPath("$.description", is(TEST_TASK_DESCRIPTION)));
 
-        expectedCountInDB = 1;
-        actualCount = taskRepository.count();
+        Long taskId = extractTaskIdFromResponse(creationResult);
 
-        assertEquals(expectedCountInDB, actualCount);
+        assertTrue(taskRepository.existsById(taskId));
     }
 
     @Test
@@ -121,13 +118,12 @@ class TaskControllerTest {
             .andReturn().getResponse();
 
         List<TaskDTO> taskDTOList = testUtils.jsonToObject(
-            response.getContentAsString(UTF_8),
-            new TypeReference<>() { }
+                response.getContentAsString(UTF_8),
+                new TypeReference<>() { }
         );
-        int expectedDtoCount = 2;
-        int actual = taskDTOList.size();
+        List<Task> expected = taskRepository.findAll();
 
-        assertEquals(expectedDtoCount, actual);
+        assertEquals(expected.size(), taskDTOList.size());
         assertEquals(TEST_TASK, taskDTOList.get(0).getName());
         assertEquals(TEST_TASK, taskDTOList.get(1).getName());
     }
@@ -184,10 +180,10 @@ class TaskControllerTest {
         Optional<Task> actual = taskRepository.findTaskById(taskId);
 
         assertNotNull(actual.orElse(null));
-        assertEquals(TEST_UPDATED_TASK, actual.get().getName());
-        assertEquals(TEST_UPDATED_TASK_DESCRIPTION, actual.get().getDescription());
-        assertEquals(testAuthor.getId(), actual.get().getAuthor().getId());
-        assertEquals(testStatusInProgress.getId(), actual.get().getTaskStatus().getId());
+        assertEquals(TEST_UPDATED_TASK, actual.map(Task::getName).orElse(null));
+        assertEquals(TEST_UPDATED_TASK_DESCRIPTION, actual.map(Task::getDescription).orElse(null));
+        assertEquals(testAuthor.getId(), actual.map(Task::getAuthor).map(User::getId).orElse(null));
+        assertEquals(testStatusInProgress.getId(), actual.map(Task::getTaskStatus).map(Status::getId).orElse(null));
     }
 
     @Test
@@ -240,5 +236,13 @@ class TaskControllerTest {
             .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + authorToken)
             .content(testUtils.toJson(taskRequestDTO))
             .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private Long extractTaskIdFromResponse(ResultActions resultActions) throws Exception {
+        MvcResult result = resultActions.andReturn();
+        String responseContent = result.getResponse().getContentAsString();
+        TypeReference<Task> typeReference = new TypeReference<Task>() { };
+        Task task = fromJson(responseContent, typeReference);
+        return task.getId();
     }
 }

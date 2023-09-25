@@ -151,7 +151,7 @@ class StatusControllerTest {
         Optional<Status> actual = statusRepository.findTaskStatusById(statusId);
 
         assertNotNull(actual.orElse(null));
-        assertEquals(TEST_UPDATED_STATUS, actual.get().getName());
+        assertEquals(TEST_UPDATED_STATUS, actual.map(Status::getName).orElse(null));
     }
 
     @Test

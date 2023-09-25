@@ -19,11 +19,13 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
+import static hexlet.code.utils.TestUtils.fromJson;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,20 +74,14 @@ class UserControllerTest {
 
     @Test
     void testCreateUser() throws Exception {
-        long expectedCountInDB = 0;
-        long actualCount = userRepository.count();
-
-        assertEquals(expectedCountInDB, actualCount);
-
-        registerUser(TEST_EMAIL_1)
+        ResultActions creationResult = registerUser(TEST_EMAIL_1)
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.email", is(TEST_EMAIL_1)));
 
-        expectedCountInDB = 1;
-        actualCount = userRepository.count();
+        Long userId = extractUserIdFromResponse(creationResult);
 
-        assertEquals(expectedCountInDB, actualCount);
+        assertTrue(userRepository.existsById(userId));
     }
 
     @Test
@@ -104,10 +100,10 @@ class UserControllerTest {
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
-        int expectedDtoCount = 2;
-        int actual = userDTOList.size();
 
-        assertEquals(expectedDtoCount, actual);
+        List<User> expected = userRepository.findAll();
+
+        assertEquals(expected.size(), userDTOList.size());
         assertEquals(TEST_EMAIL_1, userDTOList.get(0).getEmail());
         assertEquals(TEST_EMAIL_2, userDTOList.get(1).getEmail());
     }
@@ -247,5 +243,13 @@ class UserControllerTest {
             newLastName,
                 TEST_PASSWORD
         );
+    }
+
+    private Long extractUserIdFromResponse(ResultActions resultActions) throws Exception {
+        MvcResult result = resultActions.andReturn();
+        String responseContent = result.getResponse().getContentAsString();
+        TypeReference<User> typeReference = new TypeReference<User>() { };
+        User user = fromJson(responseContent, typeReference);
+        return user.getId();
     }
 }

@@ -41,7 +41,7 @@ public class TaskController {
     private final DataMapper dataMapper;
 
     private static final String ONLY_AUTHOR_BY_ID = """
-            @taskRepository.findTaskById(#id).get().getAuthor().getEmail() == authentication.getName()
+            @taskRepository.findTaskById(#id).orElse().getAuthor().getEmail() == authentication.getName()
         """;
 
     @Operation(summary = "Create new task")
