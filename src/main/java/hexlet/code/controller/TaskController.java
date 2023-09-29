@@ -40,9 +40,8 @@ public class TaskController {
 
     private final DataMapper dataMapper;
 
-    private static final String ONLY_AUTHOR_BY_ID = """
-            @taskRepository.findTaskById(#id).orElse().getAuthor().getEmail() == authentication.getName()
-        """;
+    private static final String ONLY_AUTHOR_BY_ID =
+            "@taskRepository.findTaskById(#id).orElse().getAuthor().getEmail() == authentication.getName()";
 
     @Operation(summary = "Create new task")
     @ApiResponses(value = {
@@ -96,12 +95,12 @@ public class TaskController {
                                       @PathVariable(name = "id") long id,
                                       @AuthenticationPrincipal UserDetails authDetails) {
 
-        Task updatedTask = taskService.updateTask(id, dto, authDetails);
+        Task updatedTask = taskService.updateTask(id, dto, authDetails); //
         String authenticatedEmail = authDetails.getUsername();
         if (!authenticatedEmail.equalsIgnoreCase(updatedTask.getAuthor().getEmail())) {
             throw new AccessDeniedException("Access denied");
         }
-        return dataMapper.toTaskDTO(updatedTask);
+        return dataMapper.toTaskDTO(updatedTask); //
     }
 
     @PreAuthorize(ONLY_AUTHOR_BY_ID)
@@ -118,6 +117,6 @@ public class TaskController {
         if (!authenticatedEmail.equalsIgnoreCase(deletedTask.getAuthor().getEmail())) {
             throw new AccessDeniedException("Access denied");
         }
-        taskService.deleteTask(id, authDetails);
+        taskService.deleteTask(id, authDetails); //
     }
 }

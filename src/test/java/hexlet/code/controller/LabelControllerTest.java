@@ -9,6 +9,7 @@ import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.security.JWTUtils;
 import hexlet.code.utils.TestUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,9 +111,7 @@ class LabelControllerTest {
         List<Label> labels = fromJson(response.getContentAsString(), new TypeReference<List<Label>>() { });
         List<Label> expected = labelRepository.findAll();
 
-        assertEquals(labels.size(), expected.size());
-
-        // Assertions.assertThat(labels).containsAll(expected);
+         Assertions.assertThat(labels).containsAll(expected);
 
     }
 
