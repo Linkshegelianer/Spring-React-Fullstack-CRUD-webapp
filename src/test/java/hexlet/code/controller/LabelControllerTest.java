@@ -111,7 +111,7 @@ class LabelControllerTest {
         List<Label> labels = fromJson(response.getContentAsString(), new TypeReference<List<Label>>() { });
         List<Label> expected = labelRepository.findAll();
 
-         Assertions.assertThat(labels).containsAll(expected);
+        Assertions.assertThat(labels).containsAll(expected);
 
     }
 

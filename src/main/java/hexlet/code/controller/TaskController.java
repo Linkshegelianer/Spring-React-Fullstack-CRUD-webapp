@@ -1,6 +1,7 @@
 package hexlet.code.controller;
 
 import com.querydsl.core.types.Predicate;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.utils.DataMapper;
 import hexlet.code.dto.TaskDTO;
 import hexlet.code.domain.Task;
@@ -15,6 +16,7 @@ import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,8 +42,11 @@ public class TaskController {
 
     private final DataMapper dataMapper;
 
+    private final TaskRepository taskRepository;
+
     private static final String ONLY_AUTHOR_BY_ID =
-            "@taskRepository.findTaskById(#id).orElse().getAuthor().getEmail() == authentication.getName()";
+            "@TaskRepository.findTaskById(#id).get().getAuthor().getEmail().equals(authentication.getName())";
+
 
     @Operation(summary = "Create new task")
     @ApiResponses(value = {
@@ -92,15 +97,20 @@ public class TaskController {
         @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
     @PutMapping(path = "/{id}")
     public TaskDTO updateTask(@RequestBody @Valid TaskDTO dto,
-                                      @PathVariable(name = "id") long id,
-                                      @AuthenticationPrincipal UserDetails authDetails) {
+                              @PathVariable(name = "id") long id,
+                              @AuthenticationPrincipal UserDetails authDetails,
+                              Authentication authentication) {
 
-        Task updatedTask = taskService.updateTask(id, dto, authDetails); //
+        Task updatedTask = taskService.updateTask(id, dto, authDetails);
         String authenticatedEmail = authDetails.getUsername();
         if (!authenticatedEmail.equalsIgnoreCase(updatedTask.getAuthor().getEmail())) {
             throw new AccessDeniedException("Access denied");
         }
-        return dataMapper.toTaskDTO(updatedTask); //
+//        boolean fix = taskRepository.findTaskById(id).get().getAuthor().getEmail().equals(authentication.getName());
+//        System.out.println("Here:" + fix);
+//        System.out.println("Author Email: " + updatedTask.getAuthor().getEmail());
+//        System.out.println("Authentication Name: " + authentication.getName());
+        return dataMapper.toTaskDTO(updatedTask);
     }
 
     @PreAuthorize(ONLY_AUTHOR_BY_ID)

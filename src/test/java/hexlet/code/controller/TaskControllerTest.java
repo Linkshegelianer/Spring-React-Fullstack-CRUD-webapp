@@ -122,8 +122,8 @@ class TaskControllerTest {
                 new TypeReference<>() { }
         );
 
-        for (int i = 0; i < taskDTOList.size(); i++) {
-            assertEquals(TEST_TASK, taskDTOList.get(i).getName());
+        for (TaskDTO taskDTO : taskDTOList) {
+            assertEquals(TEST_TASK, taskDTO.getName());
         }
     }
 

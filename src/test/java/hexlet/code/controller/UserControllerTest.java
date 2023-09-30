@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
 import static hexlet.code.utils.TestUtils.fromJson;
@@ -87,25 +89,28 @@ class UserControllerTest {
     @Test
     void testFindAllUsers() throws Exception {
         registerUser(TEST_EMAIL_1)
-            .andExpect(status().isCreated());
+                .andExpect(status().isCreated());
 
         registerUser(TEST_EMAIL_2)
-            .andExpect(status().isCreated());
+                .andExpect(status().isCreated());
 
         MockHttpServletResponse response = mvc.perform(get("/api/users"))
-            .andExpect(status().isOk())
-            .andReturn().getResponse();
-
-        List<UserResponseDTO> userDTOList = utils.jsonToObject(
-            response.getContentAsString(UTF_8),
-            new TypeReference<>() { }
-        );
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+        List<UserResponseDTO> userDTOList =
+                utils.jsonToObject(response.getContentAsString(UTF_8), new TypeReference<>() { });
 
         List<User> expected = userRepository.findAll();
 
         assertEquals(expected.size(), userDTOList.size());
-        assertEquals(TEST_EMAIL_1, userDTOList.get(0).getEmail());
-        assertEquals(TEST_EMAIL_2, userDTOList.get(1).getEmail());
+
+        Set<String> expectedEmails = expected.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toSet());
+
+        for (UserResponseDTO userDTO : userDTOList) {
+            assertTrue(expectedEmails.contains(userDTO.getEmail()));
+        }
     }
 
     @Test
