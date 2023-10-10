@@ -35,7 +35,7 @@ public class UserController {
     private final UserService userService;
 
     private static final String OWNER =
-            "@userRepository.findUserById(#id).orElse().getEmail() == authentication.getName()";
+            "@userRepository.findUserById(#id).get().getEmail() == authentication.getName()";
 
     @Operation(summary = "Create new user")
     @ApiResponses(value = {
@@ -74,6 +74,7 @@ public class UserController {
         return toUserResponseDTO(existedUser);
     }
 
+    @PreAuthorize(OWNER)
     @Operation(summary = "Update user by his id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User updated"),
