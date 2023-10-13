@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUser(UserRequestDTO dto) {
         if (userRepository.existsUserByEmailIgnoreCase(dto.getEmail())) {
-            throw new RuntimeException("User already exists!");
+            throw new RuntimeException("User with this email already exists!");
         }
         User newUser = toUserModel(dto);
         String encodedPassword = bCryptPasswordEncoder.encode(newUser.getPassword());

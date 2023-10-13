@@ -16,6 +16,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+import javax.persistence.Column;
 import java.time.Instant;
 
 @Getter
@@ -40,6 +42,7 @@ public class User {
     @NonNull
     @NotBlank
     @Email
+    @Column(unique = true)
     private String email;
 
     @NonNull

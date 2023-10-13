@@ -30,7 +30,6 @@ import java.util.Optional;
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
 import static hexlet.code.utils.TestUtils.fromJson;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,7 +40,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -85,53 +83,46 @@ class LabelControllerTest {
 
     @Test
     void testCreateLabel() throws Exception {
-        ResultActions creationResult = createLabel(TEST_LABEL_1)
+        final ResultActions creationResult = createLabel(TEST_LABEL_1)
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name", is(TEST_LABEL_1)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        Long labelId = extractLabelIdFromResponse(creationResult);
+        final Long labelId = extractLabelIdFromResponse(creationResult);
+        final Optional<Label> actual = labelRepository.findLabelById(labelId);
 
         assertTrue(labelRepository.existsById(labelId));
+        assertEquals(TEST_LABEL_1, actual.map(Label::getName).orElse(null));
     }
 
     @Test
     void testFindAllLabels() throws Exception {
-        createLabel(TEST_LABEL_1)
-                .andExpect(status().isCreated());
+        createLabel(TEST_LABEL_1).andExpect(status().isCreated());
+        createLabel(TEST_LABEL_2).andExpect(status().isCreated());
 
-        createLabel(TEST_LABEL_2)
-                .andExpect(status().isCreated());
-
-        MockHttpServletResponse response = mvc.perform(get("/api/labels")
+        final MockHttpServletResponse response = mvc.perform(get("/api/labels")
                         .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        List<Label> labels = fromJson(response.getContentAsString(), new TypeReference<List<Label>>() { });
-        List<Label> expected = labelRepository.findAll();
+        final List<Label> labels = fromJson(response.getContentAsString(), new TypeReference<List<Label>>() { });
+        final List<Label> expected = labelRepository.findAll();
 
         Assertions.assertThat(labels).containsAll(expected);
-
     }
 
     @Test
     void testFindLabelById() throws Exception {
-        createLabel(TEST_LABEL_1)
-            .andExpect(status().isCreated());
+        createLabel(TEST_LABEL_1).andExpect(status().isCreated());
 
-        Label existedLabel = labelRepository.findAll().get(0);
-        long labelId = existedLabel.getId();
+        final Label existedLabel = labelRepository.findAll().get(0);
+        final long labelId = existedLabel.getId();
 
-        MockHttpServletResponse response = mvc.perform(get("/api/labels/%d".formatted(labelId))
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
-            .andExpect(status().isOk())
-            .andReturn().getResponse();
+        final MockHttpServletResponse response = mvc.perform(get("/api/labels/%d".formatted(labelId))
+                        .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
 
-        LabelDTO labelDTO = testUtils.jsonToObject(
-            response.getContentAsString(UTF_8),
-            new TypeReference<>() { }
-        );
+        final LabelDTO labelDTO = testUtils.fromJson(response.getContentAsString(UTF_8), new TypeReference<>() { });
 
         assertEquals(existedLabel.getId(), labelDTO.getId());
         assertEquals(existedLabel.getName(), labelDTO.getName());
@@ -139,23 +130,22 @@ class LabelControllerTest {
 
     @Test
     void testUpdateLabel() throws Exception {
-        createLabel(TEST_LABEL_1)
-            .andExpect(status().isCreated());
+        createLabel(TEST_LABEL_1).andExpect(status().isCreated());
 
-        Label labelToUpdate = labelRepository.findAll().get(0);
-        long labelId = labelToUpdate.getId();
-        LabelDTO dto = new LabelDTO(TEST_UPDATED_LABEL);
+        final Label labelToUpdate = labelRepository.findAll().get(0);
+        final long labelId = labelToUpdate.getId();
+        final LabelDTO dto = new LabelDTO(TEST_UPDATED_LABEL);
 
-        mvc.perform(put("/api/labels/%d".formatted(labelId))
+        final MockHttpServletResponse response = mvc.perform(put("/api/labels/%d".formatted(labelId))
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
-                .content(testUtils.toJson(dto))
+                .content(testUtils.asJson(dto))
                 .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", is(labelId), Long.class))
-            .andExpect(jsonPath("$.name", is(TEST_UPDATED_LABEL)));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
 
-        Optional<Label> actual = labelRepository.findLabelById(labelId);
+        final long id = fromJson(response.getContentAsString(), new TypeReference<Label>() { }).getId();
+        final Optional<Label> actual = labelRepository.findLabelById(id);
 
         assertNotNull(actual.orElse(null));
         assertEquals(TEST_UPDATED_LABEL, actual.map(Label::getName).orElse(null));
@@ -163,8 +153,8 @@ class LabelControllerTest {
 
     @Test
     void testDeleteLabel() throws Exception {
-        ResultActions creationResult = createLabel(TEST_LABEL_1);
-        Long labelId = extractLabelIdFromResponse(creationResult);
+        final ResultActions creationResult = createLabel(TEST_LABEL_1);
+        final Long labelId = extractLabelIdFromResponse(creationResult);
 
         mvc.perform(delete("/api/labels/%d".formatted(labelId))
                         .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
@@ -174,11 +164,11 @@ class LabelControllerTest {
     }
 
     private ResultActions createLabel(String name) throws Exception {
-        LabelDTO labelRequestDTO = new LabelDTO(name);
+        final LabelDTO labelRequestDTO = new LabelDTO(name);
 
         return mvc.perform(post("/api/labels")
             .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
-            .content(testUtils.toJson(labelRequestDTO))
+            .content(testUtils.asJson(labelRequestDTO))
             .contentType(MediaType.APPLICATION_JSON));
     }
 

@@ -105,8 +105,13 @@ public class TaskController {
         @ApiResponse(responseCode = "200", description = "The task has been successfully deleted"),
         @ApiResponse(responseCode = "404", description = "The task is not found", content = @Content)})
     @DeleteMapping(path = "/{id}")
+<<<<<<< Updated upstream
     public void deleteTask(@PathVariable(name = "id") long id,
                            @AuthenticationPrincipal UserDetails authDetails) {
         taskService.deleteTask(id, authDetails);
+=======
+    public void deleteTask(@PathVariable(name = "id") long id) {
+        taskService.deleteTask(id);
+>>>>>>> Stashed changes
     }
 }

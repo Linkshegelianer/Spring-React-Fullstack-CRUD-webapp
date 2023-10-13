@@ -63,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Transactional
-    public void deleteTask(long id, UserDetails authDetails) {
+    public void deleteTask(long id) {
         Task existedTask = getTaskById(id);
         taskRepository.delete(existedTask);
     }

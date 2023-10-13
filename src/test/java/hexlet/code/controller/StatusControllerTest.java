@@ -28,8 +28,6 @@ import java.util.Optional;
 
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
 import static hexlet.code.utils.TestUtils.fromJson;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -40,7 +38,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -81,50 +78,44 @@ class StatusControllerTest {
 
     @Test
     void testCreateStatus() throws Exception {
-        ResultActions creationResult = createStatus(TEST_STATUS_1)
+        final ResultActions creationResult = createStatus(TEST_STATUS_1)
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name", is(TEST_STATUS_1)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        Long statusId = extractStatusIdFromResponse(creationResult);
+        final Long statusId = extractStatusIdFromResponse(creationResult);
+        final Optional<Status> actual = statusRepository.findTaskStatusById(statusId);
 
         assertTrue(statusRepository.existsById(statusId));
+        assertEquals(TEST_STATUS_1, actual.map(Status::getName).orElse(null));
     }
 
     @Test
     void testFindAllStatuses() throws Exception {
-        createStatus(TEST_STATUS_1)
-            .andExpect(status().isCreated());
+        createStatus(TEST_STATUS_1).andExpect(status().isCreated());
+        createStatus(TEST_STATUS_2).andExpect(status().isCreated());
 
-        createStatus(TEST_STATUS_2)
-            .andExpect(status().isCreated());
+        final MockHttpServletResponse response = mvc.perform(get("/api/statuses"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
 
-        MockHttpServletResponse response = mvc.perform(get("/api/statuses"))
-            .andExpect(status().isOk())
-            .andReturn().getResponse();
-
-        List<Status> statuses = fromJson(response.getContentAsString(), new TypeReference<List<Status>>() { });
-        List<Status> expected = statusRepository.findAll();
+        final List<Status> statuses = fromJson(response.getContentAsString(), new TypeReference<List<Status>>() { });
+        final List<Status> expected = statusRepository.findAll();
 
         assertEquals(statuses.size(), expected.size());
     }
 
     @Test
     void testFindStatusById() throws Exception {
-        createStatus(TEST_STATUS_1)
-            .andExpect(status().isCreated());
+        createStatus(TEST_STATUS_1).andExpect(status().isCreated());
 
-        Status existedStatus = statusRepository.findAll().get(0);
-        long statusId = existedStatus.getId();
+        final Status existedStatus = statusRepository.findAll().get(0);
+        final long statusId = existedStatus.getId();
 
-        MockHttpServletResponse response = mvc.perform(get("/api/statuses/%d".formatted(statusId)))
-            .andExpect(status().isOk())
-            .andReturn().getResponse();
+        final MockHttpServletResponse response = mvc.perform(get("/api/statuses/%d".formatted(statusId)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
 
-        StatusDTO statusDTO = testUtils.jsonToObject(
-            response.getContentAsString(UTF_8),
-            new TypeReference<>() { }
-        );
+        final StatusDTO statusDTO = testUtils.fromJson(response.getContentAsString(), new TypeReference<>() { });
 
         assertEquals(existedStatus.getId(), statusDTO.getId());
         assertEquals(existedStatus.getName(), statusDTO.getName());
@@ -132,23 +123,22 @@ class StatusControllerTest {
 
     @Test
     void testUpdateStatus() throws Exception {
-        createStatus(TEST_STATUS_1)
-            .andExpect(status().isCreated());
+        createStatus(TEST_STATUS_1).andExpect(status().isCreated());
 
-        Status statusToUpdate = statusRepository.findAll().get(0);
-        long statusId = statusToUpdate.getId();
-        StatusDTO dto = new StatusDTO(TEST_UPDATED_STATUS);
+        final Status statusToUpdate = statusRepository.findAll().get(0);
+        final long statusId = statusToUpdate.getId();
+        final StatusDTO dto = new StatusDTO(TEST_UPDATED_STATUS);
 
-        mvc.perform(put("/api/statuses/%d".formatted(statusId))
+        final MockHttpServletResponse response = mvc.perform(put("/api/statuses/%d".formatted(statusId))
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
-                .content(testUtils.toJson(dto))
+                .content(testUtils.asJson(dto))
                 .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", is(statusId), Long.class))
-            .andExpect(jsonPath("$.name", is(TEST_UPDATED_STATUS)));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
 
-        Optional<Status> actual = statusRepository.findTaskStatusById(statusId);
+        final long id = fromJson(response.getContentAsString(), new TypeReference<User>() { }).getId();
+        final Optional<Status> actual = statusRepository.findTaskStatusById(id);
 
         assertNotNull(actual.orElse(null));
         assertEquals(TEST_UPDATED_STATUS, actual.map(Status::getName).orElse(null));
@@ -156,15 +146,14 @@ class StatusControllerTest {
 
     @Test
     void testDeleteStatus() throws Exception {
-        createStatus(TEST_STATUS_1)
-            .andExpect(status().isCreated());
+        createStatus(TEST_STATUS_1).andExpect(status().isCreated());
 
-        Status statusToDelete = statusRepository.findAll().get(0);
-        long statusId = statusToDelete.getId();
+        final Status statusToDelete = statusRepository.findAll().get(0);
+        final long statusId = statusToDelete.getId();
 
         mvc.perform(delete("/api/statuses/%d".formatted(statusId))
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
-            .andExpect(status().isOk());
+                        .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token))
+                .andExpect(status().isOk());
 
         assertFalse(statusRepository.existsById(statusId));
     }
@@ -173,16 +162,16 @@ class StatusControllerTest {
         StatusDTO statusRequestDTO = new StatusDTO(name);
 
         return mvc.perform(post("/api/statuses")
-            .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
-            .content(testUtils.toJson(statusRequestDTO))
-            .contentType(MediaType.APPLICATION_JSON));
+                .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
+                .content(testUtils.asJson(statusRequestDTO))
+                .contentType(MediaType.APPLICATION_JSON));
     }
 
     private Long extractStatusIdFromResponse(ResultActions resultActions) throws Exception {
         MvcResult result = resultActions.andReturn();
-        String responceContent = result.getResponse().getContentAsString();
+        String responseContent = result.getResponse().getContentAsString();
         TypeReference<Status> typeReference = new TypeReference<Status>() { };
-        Status status = fromJson(responceContent, typeReference);
+        Status status = fromJson(responseContent, typeReference);
         return status.getId();
 
     }

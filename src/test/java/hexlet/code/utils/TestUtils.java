@@ -19,15 +19,6 @@ public class TestUtils {
     private static final String DEFAULT_PASSWORD = "password";
     public static final String TOKEN_PREFIX = "Bearer";
 
-
-    public String toJson(Object object) throws JsonProcessingException {
-        return JSON_MAPPER.writeValueAsString(object);
-    }
-
-    public  <T> T jsonToObject(String json, TypeReference<T> type) throws JsonProcessingException {
-        return JSON_MAPPER.readValue(json, type);
-    }
-
     public User buildDefaultUser(String email) {
         User user = new User();
         user.setFirstName(DEFAULT_FIRST_NAME);
@@ -49,5 +40,9 @@ public class TestUtils {
 
     public static <T> T fromJson(final String json, final TypeReference<T> to) throws JsonProcessingException {
         return JSON_MAPPER.readValue(json, to);
+    }
+
+    public static String asJson(final Object object) throws JsonProcessingException {
+        return JSON_MAPPER.writeValueAsString(object);
     }
 }

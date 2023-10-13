@@ -30,7 +30,6 @@ import java.util.Optional;
 import static hexlet.code.utils.TestUtils.TOKEN_PREFIX;
 import static hexlet.code.utils.TestUtils.fromJson;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,7 +40,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -99,13 +97,14 @@ class TaskControllerTest {
     void testCreateTask() throws Exception {
         ResultActions creationResult = createTask()
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name", is(TEST_TASK)))
-                .andExpect(jsonPath("$.description", is(TEST_TASK_DESCRIPTION)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        Long taskId = extractTaskIdFromResponse(creationResult);
+        final Long taskId = extractTaskIdFromResponse(creationResult);
+        final Optional<Task> actual = taskRepository.findTaskById(taskId);
 
         assertTrue(taskRepository.existsById(taskId));
+        assertEquals(TEST_TASK, actual.map(Task::getName).orElse(null));
+        assertEquals(TEST_TASK_DESCRIPTION, actual.map(Task::getDescription).orElse(null));
     }
 
     @Test
@@ -113,14 +112,11 @@ class TaskControllerTest {
         createTask().andExpect(status().isCreated());
         createTask().andExpect(status().isCreated());
 
-        MockHttpServletResponse response = mvc.perform(get("/api/tasks"))
+        final MockHttpServletResponse response = mvc.perform(get("/api/tasks"))
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        List<TaskDTO> taskDTOList = testUtils.jsonToObject(
-                response.getContentAsString(UTF_8),
-                new TypeReference<>() { }
-        );
+        final List<TaskDTO> taskDTOList = testUtils.fromJson(response.getContentAsString(), new TypeReference<>() { });
 
         for (TaskDTO taskDTO : taskDTOList) {
             assertEquals(TEST_TASK, taskDTO.getName());
@@ -131,14 +127,14 @@ class TaskControllerTest {
     void findTaskById() throws Exception {
         createTask().andExpect(status().isCreated());
 
-        Task existedTask = taskRepository.findAll().get(0);
-        long taskId = existedTask.getId();
+        final Task existedTask = taskRepository.findAll().get(0);
+        final long taskId = existedTask.getId();
 
-        MockHttpServletResponse response = mvc.perform(get("/api/tasks/%d".formatted(taskId)))
+        final MockHttpServletResponse response = mvc.perform(get("/api/tasks/%d".formatted(taskId)))
             .andExpect(status().isOk())
             .andReturn().getResponse();
 
-        TaskDTO taskDTO = testUtils.jsonToObject(
+        final TaskDTO taskDTO = testUtils.fromJson(
             response.getContentAsString(UTF_8),
             new TypeReference<>() { }
         );
@@ -155,46 +151,44 @@ class TaskControllerTest {
     void testUpdateTask() throws Exception {
         createTask().andExpect(status().isCreated());
 
-        Task taskToUpdate = taskRepository.findAll().get(0);
-        long taskId = taskToUpdate.getId();
-        TaskDTO taskRequestDTO = new TaskDTO(
+        final Task taskToUpdate = taskRepository.findAll().get(0);
+        final long taskId = taskToUpdate.getId();
+        final TaskDTO taskRequestDTO = new TaskDTO(
                 TEST_UPDATED_TASK,
-            TEST_UPDATED_TASK_DESCRIPTION,
-            testAuthor.getId(),
-            testStatusInProgress.getId()
+                TEST_UPDATED_TASK_DESCRIPTION,
+                testAuthor.getId(),
+                testStatusInProgress.getId()
         );
 
-        mvc.perform(put("/api/tasks/%d".formatted(taskId))
+        final MockHttpServletResponse response = mvc.perform(put("/api/tasks/%d".formatted(taskId))
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + authorToken)
-                .content(testUtils.toJson(taskRequestDTO))
+                .content(testUtils.asJson(taskRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", is(taskId), Long.class))
-            .andExpect(jsonPath("$.name", is(TEST_UPDATED_TASK)))
-            .andExpect(jsonPath("$.description", is(TEST_UPDATED_TASK_DESCRIPTION)))
-            .andExpect(jsonPath("$.executor.id", is(testAuthor.getId()), Long.class))
-            .andExpect(jsonPath("$.taskStatus.id", is(testStatusInProgress.getId()), Long.class));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
 
-        Optional<Task> actual = taskRepository.findTaskById(taskId);
+        final long id = fromJson(response.getContentAsString(), new TypeReference<Task>() { }).getId();
+        final Optional<Task> actual = taskRepository.findTaskById(id);
 
         assertNotNull(actual.orElse(null));
         assertEquals(TEST_UPDATED_TASK, actual.map(Task::getName).orElse(null));
         assertEquals(TEST_UPDATED_TASK_DESCRIPTION, actual.map(Task::getDescription).orElse(null));
         assertEquals(testAuthor.getId(), actual.map(Task::getAuthor).map(User::getId).orElse(null));
-        assertEquals(testStatusInProgress.getId(), actual.map(Task::getTaskStatus).map(Status::getId).orElse(null));
+        assertEquals(testStatusInProgress.getId(), actual.map(Task::getTaskStatus).map(Status::getId)
+                .orElse(null));
     }
 
     @Test
     void testDeleteTask() throws Exception {
         createTask().andExpect(status().isCreated());
 
-        Task taskToDelete = taskRepository.findAll().get(0);
-        long taskId = taskToDelete.getId();
+        final Task taskToDelete = taskRepository.findAll().get(0);
+        final long taskId = taskToDelete.getId();
 
         mvc.perform(delete("/api/tasks/%d".formatted(taskId))
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + authorToken))
-            .andExpect(status().isOk());
+                        .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + authorToken))
+                .andExpect(status().isOk());
 
         assertFalse(taskRepository.existsById(taskId));
     }
@@ -203,24 +197,24 @@ class TaskControllerTest {
     void testUpdateOrDeleteTaskByNotTheOwner() throws Exception {
         createTask().andExpect(status().isCreated());
 
-        Task taskToUpdateOrDelete = taskRepository.findAll().get(0);
-        long taskId = taskToUpdateOrDelete.getId();
-        TaskDTO taskRequestDTO = new TaskDTO(
+        final Task taskToUpdateOrDelete = taskRepository.findAll().get(0);
+        final long taskId = taskToUpdateOrDelete.getId();
+        final TaskDTO taskRequestDTO = new TaskDTO(
                 TEST_UPDATED_TASK,
-            TEST_UPDATED_TASK_DESCRIPTION,
-            testAuthor.getId(),
-            testStatusInProgress.getId()
+                TEST_UPDATED_TASK_DESCRIPTION,
+                testAuthor.getId(),
+                testStatusInProgress.getId()
         );
 
         mvc.perform(put("/api/tasks/%d".formatted(taskId))
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + executorToken)
-                .content(testUtils.toJson(taskRequestDTO))
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isForbidden());
+                        .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + executorToken)
+                        .content(testUtils.asJson(taskRequestDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
 
         mvc.perform(delete("/api/tasks/%d".formatted(taskId))
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + executorToken))
-            .andExpect(status().isForbidden());
+                        .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + executorToken))
+                .andExpect(status().isForbidden());
     }
 
     private ResultActions createTask() throws Exception {
@@ -233,7 +227,7 @@ class TaskControllerTest {
 
         return mvc.perform(post("/api/tasks")
             .header(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + authorToken)
-            .content(testUtils.toJson(taskRequestDTO))
+            .content(testUtils.asJson(taskRequestDTO))
             .contentType(MediaType.APPLICATION_JSON));
     }
 

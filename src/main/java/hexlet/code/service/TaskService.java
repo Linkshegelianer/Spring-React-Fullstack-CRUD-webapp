@@ -24,5 +24,5 @@ public interface TaskService {
     Task updateTask(long id, TaskDTO dto, UserDetails authDetails);
 
     @Transactional
-    void deleteTask(long id, UserDetails authDetails);
+    void deleteTask(long id);
 }
