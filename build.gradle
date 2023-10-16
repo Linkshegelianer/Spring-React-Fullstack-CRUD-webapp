@@ -10,12 +10,12 @@ plugins {
 	id 'jacoco'
 }
 
-group = 'hexlet.code'
+group = 'project.code'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 20
 
 application {
-	mainClass = 'hexlet.code.AppApplication'
+	mainClass = 'project.code.AppApplication'
 }
 
 configurations {
