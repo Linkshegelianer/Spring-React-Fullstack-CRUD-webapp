@@ -1,15 +1,15 @@
-# Task Manager
+# Менеджер задач
 
-This repository contains Spring Boot CRUD Web-application for managing task from different authorized users. This is an educational project aimed at the practice of working with Spring Boot, Bootstrap, Thymeleaf, Spring Data JPA, Hibernate, PostgreSQL, JUnit and GitHub Actions.
-
-**See how it works [here](https://task-manager-w37d.onrender.com).**
+Версия приложения для отслеживания задач на русском языке. Учебный проект, написанный на Spring Boot и React, которым уже можно пользоваться для повседневных нужд. 
 
 [![Java CI](https://github.com/Linkshegelianer/java-project-73/workflows/Java%20CI/badge.svg)](https://github.com/Linkshegelianer/java-project-73/actions/workflows/java-ci.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8806e087dde7c98f6218/maintainability)](https://codeclimate.com/github/Linkshegelianer/java-project-73/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/8806e087dde7c98f6218/test_coverage)](https://codeclimate.com/github/Linkshegelianer/java-project-73/test_coverage)
 
-##  Technologies
-#### Backend Technologies:
+**[Инструкция](https://github.com/Linkshegelianer/Spring-React-Fullstack-CRUD-webapp/blob/main/description/MANUAL_RU.md)**
+
+##  Технологии
+#### Бэкенд:
 1. Java 20 + Gradle 8.2
 2. Spring Boot + Spring Data JPA + Spring Security
 3. JSON Webtoken
@@ -19,13 +19,13 @@ This repository contains Spring Boot CRUD Web-application for managing task from
 6. Querydsl
 7. Swagger
 
-#### Frontend Technologies:
+#### Фронтенд:
 1. React 17.0.2
 2. Bootstrap
 3. Sass
 3. Babel
 4. Axios
 
-#### Database Management
+#### Базы данных:
 1. H2
 1. PostgreSQL
