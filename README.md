@@ -2,11 +2,11 @@
 
 Версия приложения для отслеживания задач на русском языке. Учебный проект, написанный на Spring Boot и React, которым уже можно пользоваться для повседневных нужд. 
 
-**[Инструкция](https://github.com/Linkshegelianer/Spring-React-Fullstack-CRUD-webapp/blob/main/description/MANUAL_RU.md).**
-
 [![Java CI](https://github.com/Linkshegelianer/java-project-73/workflows/Java%20CI/badge.svg)](https://github.com/Linkshegelianer/java-project-73/actions/workflows/java-ci.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8806e087dde7c98f6218/maintainability)](https://codeclimate.com/github/Linkshegelianer/java-project-73/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/8806e087dde7c98f6218/test_coverage)](https://codeclimate.com/github/Linkshegelianer/java-project-73/test_coverage)
+
+**[Инструкция](https://github.com/Linkshegelianer/Spring-React-Fullstack-CRUD-webapp/blob/main/description/MANUAL_RU.md)**
 
 ##  Технологии
 #### Бэкенд:
