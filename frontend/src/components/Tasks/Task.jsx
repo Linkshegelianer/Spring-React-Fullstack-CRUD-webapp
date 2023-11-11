@@ -114,7 +114,7 @@ const Task = () => {
             <Col>
               <Link to={routes.taskEditPagePath(task.id)}>{t('edit')}</Link>
               <Form onSubmit={(e) => removeTask(e, task.id)}>
-                <Button type="submit" variant="link">Удалить</Button>
+                <Button type="submit" variant="link">Delete</Button>
               </Form>
             </Col>
           </Row>

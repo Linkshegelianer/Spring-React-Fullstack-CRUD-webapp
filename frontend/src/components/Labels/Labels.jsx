@@ -62,9 +62,9 @@ const Labels = () => {
               <td>{label.name}</td>
               <td>{new Date(label.createdAt).toLocaleString('ru')}</td>
               <td>
-                <Link to={routes.labelEditPagePath(label.id)}>{t('edit', { defaultValue: 'Изменить' })}</Link>
+                <Link to={routes.labelEditPagePath(label.id)}>{t('edit', { defaultValue: 'Edit' })}</Link>
                 <Form onSubmit={(event) => removeLabel(event, label.id)}>
-                  <Button type="submit" variant="link">Удалить</Button>
+                  <Button type="submit" variant="link">Delete</Button>
                 </Form>
               </td>
             </tr>

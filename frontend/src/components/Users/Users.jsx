@@ -71,7 +71,7 @@ const UsersComponent = () => {
             <td>
               <Link to={routes.userEditPagePath(user.id)}>{t('edit')}</Link>
               <Form onSubmit={(event) => removeUserHandler(event, user.id)}>
-                <Button type="submit" variant="link">Удалить</Button>
+                <Button type="submit" variant="link">Delete</Button>
               </Form>
             </td>
           </tr>

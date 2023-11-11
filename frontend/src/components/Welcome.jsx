@@ -14,7 +14,7 @@ const Welcome = () => {
           {t('welcome.body')}
         </div>
         <hr />
-        <Button variant="primary" href="/signup" className="btn-lg">{t('welcome.buttonText')}</Button>
+        <Button variant="primary" href="https://github.com/Linkshegelianer/Spring-React-Fullstack-CRUD-webapp/blob/main/description/MANUAL_EN.md" className="btn-lg">{t('welcome.buttonText')}</Button>
       </Card.Body>
     </Card>
   );
